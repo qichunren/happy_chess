@@ -1,0 +1,30 @@
+doctype
+head
+  meta(charset="utf-8")
+  meta(name="viewport" content="width=device-width")
+  title #{title}
+  link(href="main.css",rel="stylesheet")
+  script(src="/jquery-1.10.2.min.js")
+  script(src="/socket.io/socket.io.js")
+
+  link(rel='stylesheet', href='main.css')
+  script(src='/chess.js')
+
+body
+  canvas#chess_game(width="800" height="680" style="border:1px solid #c3c3c3;")
+
+  script.
+    var socket = io("#{socketurl}");
+
+    socket.on('refresh', function (data) {
+      editor.setValue(data.body);
+    });
+
+    socket.on('change', function (data) {
+      console.log(data);
+      editor.replaceRange(data.text, data.from, data.to);
+    });
+    socket.on('cursorActivity', function (data) {
+        editor.setCursor(data.line, data.ch);
+        editor.focus();
+    });
