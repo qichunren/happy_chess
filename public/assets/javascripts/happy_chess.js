@@ -364,6 +364,10 @@
   })();
 
   PiecePoint = (function() {
+    PiecePoint.clone = function(point) {
+      return new PiecePoint(point.x, point.y);
+    };
+
     function PiecePoint(x, y) {
       this.x = x;
       this.y = y;
@@ -611,7 +615,7 @@
       this.current_player = null;
       this.current_points = [];
       this.selected_piece = null;
-      this.target_point;
+      this.target_point = null;
       Game.log("panel width: " + this.panel_width + ", height: " + this.panel_height);
     }
 
@@ -825,7 +829,7 @@
                 point = points_in_columns[_k];
                 if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
                   if (this.is_blank_point(point)) {
-                    this.target_point = point;
+                    this.target_point = PiecePoint.clone(point);
                     break;
                   } else {
                     _results1.push(void 0);

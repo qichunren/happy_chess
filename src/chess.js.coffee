@@ -62,7 +62,7 @@ class Chess
     @current_player = null # current player is at bottom, enmy player is at top.
     @current_points = []
     @selected_piece = null
-    @target_point
+    @target_point = null
     Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
@@ -218,7 +218,7 @@ class Chess
         for point in points_in_columns
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
-              @target_point = point
+              @target_point = PiecePoint.clone(point)
               break
 
 $ ->

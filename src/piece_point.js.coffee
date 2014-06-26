@@ -1,5 +1,8 @@
 class PiecePoint
 
+  @clone:(point) ->
+    new PiecePoint(point.x, point.y)
+
   constructor: (x, y) ->
     @x = x
     @y = y
