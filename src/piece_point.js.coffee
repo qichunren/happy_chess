@@ -7,7 +7,8 @@ class PiecePoint
     @x = x
     @y = y
     @is_hover = false
-    @state = null # null means blank, it may be point to a red/blank piece.
+    @moveable = false
+    @state = null # null means blank, it may be point to a red/black piece.
 
   x_in_world: ->
     @x * Game.piece_padding + Game.margin_left
@@ -24,12 +25,23 @@ class PiecePoint
   hout: ->
     @is_hover = false
 
+  mark_moveable: ->
+    @moveable = true
+  reset_moveable: ->
+    @moveable = false
+
   renderTo:(ctx) ->
     if @is_hover
       ctx.beginPath()
       ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
       ctx.lineWidth = 5
       ctx.strokeStyle = '#003300'
+      ctx.stroke()
+    if @moveable
+      ctx.beginPath()
+      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
+      ctx.lineWidth = 5
+      ctx.strokeStyle = '#FF9900'
       ctx.stroke()
 
   is_at_top_edge: ->

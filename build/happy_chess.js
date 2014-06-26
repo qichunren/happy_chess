@@ -76,9 +76,6 @@
             this.point.y += 1;
           }
         }
-        if (this.target_point.x === this.point.x && this.target_point.y === this.point.y) {
-          return this.set_point(this.target_point);
-        }
       }
     };
 
@@ -343,6 +340,25 @@
       }
     };
 
+    Piece.prototype.moveable_points = function() {
+      var target_points, x, y, _i, _j;
+      target_points = [];
+      switch (this.name) {
+        case 'car':
+          for (y = _i = 0; _i <= 9; y = ++_i) {
+            if (y !== this.point.y) {
+              target_points.push(new PiecePoint(this.point.x, y));
+            }
+          }
+          for (x = _j = 0; _j <= 8; x = ++_j) {
+            if (x !== this.point.x) {
+              target_points.push(new PiecePoint(x, this.point.y));
+            }
+          }
+      }
+      return target_points;
+    };
+
     Piece.prototype.active = function() {
       return this.is_selected = true;
     };
@@ -372,6 +388,7 @@
       this.x = x;
       this.y = y;
       this.is_hover = false;
+      this.moveable = false;
       this.state = null;
     }
 
@@ -395,12 +412,27 @@
       return this.is_hover = false;
     };
 
+    PiecePoint.prototype.mark_moveable = function() {
+      return this.moveable = true;
+    };
+
+    PiecePoint.prototype.reset_moveable = function() {
+      return this.moveable = false;
+    };
+
     PiecePoint.prototype.renderTo = function(ctx) {
       if (this.is_hover) {
         ctx.beginPath();
         ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
         ctx.lineWidth = 5;
         ctx.strokeStyle = '#003300';
+        ctx.stroke();
+      }
+      if (this.moveable) {
+        ctx.beginPath();
+        ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#FF9900';
         return ctx.stroke();
       }
     };
@@ -814,6 +846,8 @@
             if (x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius) {
               piece.active();
               _this.selected_piece = piece;
+              _this.mark_available_target_points();
+              Game.log("selected piece:" + _this.selected_piece.name + ", x,y:" + _this.selected_piece.point.x + "," + _this.selected_piece.point.y);
             } else {
               piece.deactive();
             }
@@ -827,6 +861,7 @@
               _results1 = [];
               for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
                 point = points_in_columns[_k];
+                point.reset_moveable();
                 if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
                   if (this.is_blank_point(point)) {
                     this.target_point = PiecePoint.clone(point);
@@ -844,6 +879,17 @@
           return _results;
         };
       })(this));
+    };
+
+    Chess.prototype.mark_available_target_points = function() {
+      var target_point, _i, _len, _ref, _results;
+      _ref = this.selected_piece.moveable_points();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        target_point = _ref[_i];
+        _results.push(this.point(target_point.x, target_point.y).mark_moveable());
+      }
+      return _results;
     };
 
     return Chess;

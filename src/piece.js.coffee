@@ -27,8 +27,9 @@ class Piece
       if @target_point.y != @point.y
         @point.y -= 1 if @target_point.y < @point.y
         @point.y += 1 if @target_point.y > @point.y
-      if @target_point.x == @point.x && @target_point.y == @point.y
-        @set_point(@target_point)
+#      if @target_point.x == @point.x && @target_point.y == @point.y
+#        @set_point(@target_point)
+    return
 
   renderTo: (ctx) ->
     ctx.beginPath()
@@ -103,6 +104,15 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
+  moveable_points: ->
+    target_points = []
+    switch @name
+      when 'car'
+        for y in [0..9]
+          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
+        for x in [0..8]
+          target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+    target_points
 
   active: ->
     @is_selected = true

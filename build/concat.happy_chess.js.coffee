@@ -47,8 +47,9 @@ class Piece
       if @target_point.y != @point.y
         @point.y -= 1 if @target_point.y < @point.y
         @point.y += 1 if @target_point.y > @point.y
-      if @target_point.x == @point.x && @target_point.y == @point.y
-        @set_point(@target_point)
+#      if @target_point.x == @point.x && @target_point.y == @point.y
+#        @set_point(@target_point)
+    return
 
   renderTo: (ctx) ->
     ctx.beginPath()
@@ -123,6 +124,15 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
+  moveable_points: ->
+    target_points = []
+    switch @name
+      when 'car'
+        for y in [0..9]
+          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
+        for x in [0..8]
+          target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+    target_points
 
   active: ->
     @is_selected = true
@@ -147,7 +157,8 @@ class PiecePoint
     @x = x
     @y = y
     @is_hover = false
-    @state = null # null means blank, it may be point to a red/blank piece.
+    @moveable = false
+    @state = null # null means blank, it may be point to a red/black piece.
 
   x_in_world: ->
     @x * Game.piece_padding + Game.margin_left
@@ -164,12 +175,23 @@ class PiecePoint
   hout: ->
     @is_hover = false
 
+  mark_moveable: ->
+    @moveable = true
+  reset_moveable: ->
+    @moveable = false
+
   renderTo:(ctx) ->
     if @is_hover
       ctx.beginPath()
       ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
       ctx.lineWidth = 5
       ctx.strokeStyle = '#003300'
+      ctx.stroke()
+    if @moveable
+      ctx.beginPath()
+      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
+      ctx.lineWidth = 5
+      ctx.strokeStyle = '#FF9900'
       ctx.stroke()
 
   is_at_top_edge: ->
@@ -480,15 +502,23 @@ class Chess
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           piece.active()
           @selected_piece = piece
+          @mark_available_target_points()
+          Game.log("selected piece:#{@selected_piece.name}, x,y:#{@selected_piece.point.x},#{@selected_piece.point.y}")
         else
           piece.deactive()
 
       for points_in_columns in @points
         for point in points_in_columns
+          point.reset_moveable()
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
               @target_point = PiecePoint.clone(point)
               break
+
+  mark_available_target_points: ->
+    for target_point in @selected_piece.moveable_points()
+      @point(target_point.x, target_point.y).mark_moveable()
+
 
 $ ->
   chess_game = new Chess()

@@ -211,15 +211,23 @@ class Chess
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           piece.active()
           @selected_piece = piece
+          @mark_available_target_points()
+          Game.log("selected piece:#{@selected_piece.name}, x,y:#{@selected_piece.point.x},#{@selected_piece.point.y}")
         else
           piece.deactive()
 
       for points_in_columns in @points
         for point in points_in_columns
+          point.reset_moveable()
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
               @target_point = PiecePoint.clone(point)
               break
+
+  mark_available_target_points: ->
+    for target_point in @selected_piece.moveable_points()
+      @point(target_point.x, target_point.y).mark_moveable()
+
 
 $ ->
   chess_game = new Chess()
