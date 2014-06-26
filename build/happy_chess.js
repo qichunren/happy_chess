@@ -414,7 +414,18 @@
           }
           break;
         case 'chief':
-          [];
+          if (this.point.x - 1 >= 3 && this.point.y - 1 >= 0) {
+            target_points.push(new PiecePoint(this.point.x - 1, this.point.y - 1));
+          }
+          if (this.point.x - 1 >= 3 && this.point.y + 1 <= 2) {
+            target_points.push(new PiecePoint(this.point.x - 1, this.point.y + 1));
+          }
+          if (this.point.x + 1 <= 5 && this.point.y + 1 <= 2) {
+            target_points.push(new PiecePoint(this.point.x + 1, this.point.y + 1));
+          }
+          if (this.point.x + 1 <= 5 && this.point.y - 1 >= 0) {
+            target_points.push(new PiecePoint(this.point.x + 1, this.point.y - 1));
+          }
           break;
         case 'gun':
           [];

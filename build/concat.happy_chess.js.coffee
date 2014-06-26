@@ -148,7 +148,7 @@ class Piece
         target_points.push(new PiecePoint(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
         target_points.push(new PiecePoint(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
         target_points.push(new PiecePoint(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
-      when 'knight'
+      when 'knight' # max to 4 points
         if @point.is_at(3, 0)
           target_points.push(new PiecePoint(4, 1))
         else if @point.is_at(3, 2)
@@ -162,9 +162,11 @@ class Piece
           target_points.push(new PiecePoint(3, 2))
           target_points.push(new PiecePoint(5, 2))
           target_points.push(new PiecePoint(5, 0))
-      when 'chief'
-        # todo
-        []
+      when 'chief' # max to 4 points
+        target_points.push(new PiecePoint(@point.x-1, @point.y-1)) if @point.x-1 >= 3 && @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x-1, @point.y+1)) if @point.x-1 >= 3 && @point.y+1 <= 2
+        target_points.push(new PiecePoint(@point.x+1, @point.y+1)) if @point.x+1 <= 5 && @point.y+1 <= 2
+        target_points.push(new PiecePoint(@point.x+1, @point.y-1)) if @point.x+1 <= 5 && @point.y-1 >= 0
       when 'gun'
         # todo
         []
