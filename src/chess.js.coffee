@@ -238,9 +238,8 @@ class Chess
       for points_in_columns in @points
         for point in points_in_columns
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
-            if @is_blank_point(point)
-              @select_point(point)
-              break
+            @select_point(point)
+            break
     return
 
   reset_moveable_points: ->
@@ -269,13 +268,14 @@ class Chess
     return
 
   select_point: (point) ->
-    point.is_selected = true
-    @selected_point = point
-    for points_in_columns in @points
-      for point2 in points_in_columns
-        if point2 != point
-          point2.is_selected = false
-    @reset_moveable_points()
+    if @is_blank_point(point)
+      point.is_selected = true
+      @selected_point = point
+      for points_in_columns in @points
+        for point2 in points_in_columns
+          if point2 != point
+            point2.is_selected = false
+      @reset_moveable_points()
     return
 
 
