@@ -474,6 +474,10 @@
       };
     }
 
+    Player.prototype.alive_pieces = function() {
+      return this.pieces_array(false);
+    };
+
     Player.prototype.pieces_array = function(ignore_alive) {
       var attr, piece, _ref, _ref1;
       if (ignore_alive == null) {
@@ -563,6 +567,8 @@
       var piece, point, points_in_columns, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       this.ctx.fillStyle = '#FFF';
       this.ctx.fillRect(0, 0, this.ctx_width, this.ctx_height);
+      this.canvas_element.width = 1;
+      this.canvas_element.width = this.ctx_width;
       this.drawMap();
       _ref = this.points;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -589,8 +595,8 @@
       this.canvasElemLeft = this.canvas_element.offsetLeft;
       this.canvasElemTop = this.canvas_element.offsetTop;
       this.ctx = this.canvas_element.getContext('2d');
-      this.ctx_width = 800;
-      this.ctx_height = 600;
+      this.ctx_width = this.canvas_element.width;
+      this.ctx_height = this.canvas_element.height;
       this.margin_top = Game.margin_top;
       this.margin_left = Game.margin_left;
       this.piece_margin = Game.piece_padding;
@@ -665,7 +671,7 @@
     };
 
     Chess.prototype.drawMap = function() {
-      var b2_point, b_point, lb_point, left_edge_point, lt_point, rb_point, right_edge_point, rt_point, s11_point, s1_point, s22_point, s2_point, s33_point, s3_point, s44_point, s4_point, t2_point, t_point, _i, _j, _k, _x, _x2, _y;
+      var b2_point, b_point, lb_point, left_edge_point, lt_point, rb_point, right_edge_point, rt_point, s11_point, s1_point, s22_point, s2_point, s33_point, s3_point, s44_point, s4_point, t2_point, t_point, x, x2, y, _i, _j, _k;
       lb_point = this.point(0, 0);
       rb_point = this.point(8, 0);
       lt_point = this.point(0, 9);
@@ -690,25 +696,25 @@
       this.ctx.stroke();
       this.ctx.strokeStyle = '#BDBDBD';
       this.ctx.lineWidth = 1;
-      for (_y = _i = 1; _i <= 8; _y = ++_i) {
-        left_edge_point = this.point(0, _y);
-        right_edge_point = this.point(8, _y);
+      for (y = _i = 1; _i <= 8; y = ++_i) {
+        left_edge_point = this.point(0, y);
+        right_edge_point = this.point(8, y);
         this.ctx.beginPath();
         this.ctx.moveTo(left_edge_point.x_in_world(), left_edge_point.y_in_world());
         this.ctx.lineTo(right_edge_point.x_in_world(), right_edge_point.y_in_world());
         this.ctx.stroke();
       }
-      for (_x = _j = 1; _j <= 7; _x = ++_j) {
-        b_point = this.point(_x, 0);
-        t_point = this.point(_x, 4);
+      for (x = _j = 1; _j <= 7; x = ++_j) {
+        b_point = this.point(x, 0);
+        t_point = this.point(x, 4);
         this.ctx.beginPath();
         this.ctx.moveTo(b_point.x_in_world(), b_point.y_in_world());
         this.ctx.lineTo(t_point.x_in_world(), t_point.y_in_world());
         this.ctx.stroke();
       }
-      for (_x2 = _k = 1; _k <= 7; _x2 = ++_k) {
-        b2_point = this.point(_x2, 5);
-        t2_point = this.point(_x2, 9);
+      for (x2 = _k = 1; _k <= 7; x2 = ++_k) {
+        b2_point = this.point(x2, 5);
+        t2_point = this.point(x2, 9);
         this.ctx.beginPath();
         this.ctx.moveTo(b2_point.x_in_world(), b2_point.y_in_world());
         this.ctx.lineTo(t2_point.x_in_world(), t2_point.y_in_world());
@@ -798,7 +804,7 @@
           x = event.pageX - _this.canvasElemLeft;
           y = event.pageY - _this.canvasElemTop;
           console.log('receive click event on canvas: ', x, y);
-          _ref = _this.pieces;
+          _ref = _this.current_player.alive_pieces();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             piece = _ref[_i];
             if (x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius) {

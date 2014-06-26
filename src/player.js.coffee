@@ -24,6 +24,9 @@ class Player
       soldier_5  : null
     }
 
+  alive_pieces: ->
+    @pieces_array(false)
+
   # piece_array() return all pieces
   # piece_array(false) return all alive pieces
   pieces_array: (ignore_alive = true)->

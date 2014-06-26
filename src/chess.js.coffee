@@ -21,10 +21,13 @@ class Chess
     return
 
   render: ->
+    # Clear canvas first
     @ctx.fillStyle = '#FFF';
     @ctx.fillRect(0, 0, @ctx_width, @ctx_height)
-    @drawMap()
+    @canvas_element.width = 1
+    @canvas_element.width = @ctx_width
 
+    @drawMap()
     for points_in_columns in @points
       for point in points_in_columns
         point.renderTo(@ctx)
@@ -39,8 +42,8 @@ class Chess
     @canvasElemLeft = @canvas_element.offsetLeft
     @canvasElemTop = @canvas_element.offsetTop
     @ctx = @canvas_element.getContext('2d')
-    @ctx_width = 800
-    @ctx_height = 600
+    @ctx_width = @canvas_element.width
+    @ctx_height = @canvas_element.height
     @margin_top = Game.margin_top
     @margin_left = Game.margin_left
 
@@ -90,10 +93,10 @@ class Chess
 
   drawMap: ->
     # First draw 4 edge borders
-    lb_point = @point(0,0)
-    rb_point = @point(8,0)
-    lt_point = @point(0,9)
-    rt_point = @point(8,9)
+    lb_point = @point(0, 0)
+    rb_point = @point(8, 0)
+    lt_point = @point(0, 9)
+    rt_point = @point(8, 9)
     @ctx.beginPath()
     @ctx.strokeStyle = '#000000'
     @ctx.lineWidth = 4
@@ -119,53 +122,53 @@ class Chess
     # 2: Draw rows
     @ctx.strokeStyle = '#BDBDBD'
     @ctx.lineWidth = 1
-    for _y in [1..8]
-      left_edge_point = @point(0, _y)
-      right_edge_point = @point(8, _y)
+    for y in [1..8]
+      left_edge_point = @point(0, y)
+      right_edge_point = @point(8, y)
       @ctx.beginPath()
       @ctx.moveTo(left_edge_point.x_in_world(), left_edge_point.y_in_world())
       @ctx.lineTo(right_edge_point.x_in_world(), right_edge_point.y_in_world())
       @ctx.stroke()
 
     # 3: Draw self columns
-    for _x in [1..7]
-      b_point = @point(_x, 0)
-      t_point = @point(_x, 4)
+    for x in [1..7]
+      b_point = @point(x, 0)
+      t_point = @point(x, 4)
       @ctx.beginPath()
       @ctx.moveTo(b_point.x_in_world(), b_point.y_in_world())
       @ctx.lineTo(t_point.x_in_world(), t_point.y_in_world())
       @ctx.stroke()
     # 4: Draw enmy columns
-    for _x2 in [1..7]
-      b2_point = @point(_x2, 5)
-      t2_point = @point(_x2, 9)
+    for x2 in [1..7]
+      b2_point = @point(x2, 5)
+      t2_point = @point(x2, 9)
       @ctx.beginPath()
       @ctx.moveTo(b2_point.x_in_world(), b2_point.y_in_world())
       @ctx.lineTo(t2_point.x_in_world(), t2_point.y_in_world())
       @ctx.stroke()
 
     # 5: Draw self house line
-    s1_point = @point(3,0)
-    s11_point = @point(5,2)
+    s1_point = @point(3, 0)
+    s11_point = @point(5, 2)
     @ctx.beginPath()
     @ctx.moveTo(s1_point.x_in_world(), s1_point.y_in_world())
     @ctx.lineTo(s11_point.x_in_world(), s11_point.y_in_world())
     @ctx.stroke()
-    s2_point = @point(5,0)
-    s22_point = @point(3,2)
+    s2_point = @point(5, 0)
+    s22_point = @point(3, 2)
     @ctx.beginPath()
     @ctx.moveTo(s2_point.x_in_world(), s2_point.y_in_world())
     @ctx.lineTo(s22_point.x_in_world(), s22_point.y_in_world())
     @ctx.stroke()
     # 6: Draw enmy house line
-    s3_point = @point(3,7)
-    s33_point = @point(5,9)
+    s3_point = @point(3, 7)
+    s33_point = @point(5, 9)
     @ctx.beginPath()
     @ctx.moveTo(s3_point.x_in_world(), s3_point.y_in_world())
     @ctx.lineTo(s33_point.x_in_world(), s33_point.y_in_world())
     @ctx.stroke()
-    s4_point = @point(5,7)
-    s44_point = @point(3,9)
+    s4_point = @point(5, 7)
+    s44_point = @point(3, 9)
     @ctx.beginPath()
     @ctx.moveTo(s4_point.x_in_world(), s4_point.y_in_world())
     @ctx.lineTo(s44_point.x_in_world(), s44_point.y_in_world())
@@ -204,7 +207,7 @@ class Chess
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
       console.log('receive click event on canvas: ', x, y)
-      for piece in @pieces
+      for piece in @current_player.alive_pieces()
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           piece.active()
           @selected_piece = piece
