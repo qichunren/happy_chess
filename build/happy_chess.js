@@ -16,91 +16,6 @@
 
   ChineseChess.radius = 26;
 
-  requestAnimFrame = (function() {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };
-  })();
-
-  PiecePoint = (function() {
-    function PiecePoint(x, y) {
-      this.x = x;
-      this.y = y;
-      this.is_hover = false;
-    }
-
-    PiecePoint.prototype.x_in_world = function() {
-      return this.x * ChineseChess.piece_padding + ChineseChess.margin_left;
-    };
-
-    PiecePoint.prototype.y_in_world = function() {
-      return ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top;
-    };
-
-    PiecePoint.prototype.is_same = function(other) {
-      return this.x === other.x && this.y === other.y;
-    };
-
-    PiecePoint.prototype.hover = function() {
-      return this.is_hover = true;
-    };
-
-    PiecePoint.prototype.hout = function() {
-      return this.is_hover = false;
-    };
-
-    PiecePoint.prototype.renderTo = function(ctx) {
-      if (this.is_hover) {
-        ctx.beginPath();
-        ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#003300';
-        return ctx.stroke();
-      }
-    };
-
-    PiecePoint.prototype.is_at_top_edge = function() {
-      return this.y === 9;
-    };
-
-    PiecePoint.prototype.is_at_bottom = function() {
-      return this.y === 0;
-    };
-
-    PiecePoint.prototype.is_at_left_edge = function() {
-      return this.x === 0;
-    };
-
-    PiecePoint.prototype.is_at_right_edge = function() {
-      return this.x === (ChineseChess.columns - 1);
-    };
-
-    PiecePoint.prototype.is_at_self_river = function() {
-      return this.y === 4;
-    };
-
-    PiecePoint.prototype.is_at_enmy_river = function() {
-      return this.y === 5;
-    };
-
-    PiecePoint.prototype.toPosition = function() {
-      return {
-        x: this.x * ChineseChess.piece_padding,
-        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding
-      };
-    };
-
-    PiecePoint.prototype.toPositionInWorld = function() {
-      return {
-        x: this.x * ChineseChess.piece_padding + ChineseChess.margin_left,
-        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top
-      };
-    };
-
-    return PiecePoint;
-
-  })();
-
   Piece = (function() {
     function Piece(name_symbol, color) {
       this.name_symbol = name_symbol;
@@ -300,6 +215,91 @@
     };
 
     return Piece;
+
+  })();
+
+  requestAnimFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })();
+
+  PiecePoint = (function() {
+    function PiecePoint(x, y) {
+      this.x = x;
+      this.y = y;
+      this.is_hover = false;
+    }
+
+    PiecePoint.prototype.x_in_world = function() {
+      return this.x * ChineseChess.piece_padding + ChineseChess.margin_left;
+    };
+
+    PiecePoint.prototype.y_in_world = function() {
+      return ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top;
+    };
+
+    PiecePoint.prototype.is_same = function(other) {
+      return this.x === other.x && this.y === other.y;
+    };
+
+    PiecePoint.prototype.hover = function() {
+      return this.is_hover = true;
+    };
+
+    PiecePoint.prototype.hout = function() {
+      return this.is_hover = false;
+    };
+
+    PiecePoint.prototype.renderTo = function(ctx) {
+      if (this.is_hover) {
+        ctx.beginPath();
+        ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#003300';
+        return ctx.stroke();
+      }
+    };
+
+    PiecePoint.prototype.is_at_top_edge = function() {
+      return this.y === 9;
+    };
+
+    PiecePoint.prototype.is_at_bottom = function() {
+      return this.y === 0;
+    };
+
+    PiecePoint.prototype.is_at_left_edge = function() {
+      return this.x === 0;
+    };
+
+    PiecePoint.prototype.is_at_right_edge = function() {
+      return this.x === (ChineseChess.columns - 1);
+    };
+
+    PiecePoint.prototype.is_at_self_river = function() {
+      return this.y === 4;
+    };
+
+    PiecePoint.prototype.is_at_enmy_river = function() {
+      return this.y === 5;
+    };
+
+    PiecePoint.prototype.toPosition = function() {
+      return {
+        x: this.x * ChineseChess.piece_padding,
+        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding
+      };
+    };
+
+    PiecePoint.prototype.toPositionInWorld = function() {
+      return {
+        x: this.x * ChineseChess.piece_padding + ChineseChess.margin_left,
+        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top
+      };
+    };
+
+    return PiecePoint;
 
   })();
 
