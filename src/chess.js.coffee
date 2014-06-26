@@ -1,5 +1,16 @@
 class Chess
 
+  debug: ->
+    for piece in @pieces
+      if piece.is_selected
+        console.log("Selected piece is #{piece.name_symbol} (#{piece.point.x},#{piece.point.y})")
+    for points_in_columns in @points
+      for point in points_in_columns
+        if point.is_selected
+          console.log("Selected point is (#{point.x},#{point.y})")
+    return
+
+
   main: =>
     now = Date.now()
     dt = (now - @lastTime) / 1000.0
@@ -10,14 +21,11 @@ class Chess
     return
 
   update: (dt) ->
-    @current_points = []
     for piece in @pieces
-      @current_points.push(piece.point)
-      if @selected_piece == piece
+      if piece.is_selected
         if @target_point
-          @selected_piece.move_to_point(@target_point)
-          @selected_piece.update(dt)
-          @selected_piece = null
+          piece.move_to_point(@target_point)
+          piece.update(dt)
     return
 
   render: ->
@@ -60,7 +68,6 @@ class Chess
     @player_red = null
     @player_black = null
     @current_player = null # current player is at bottom, enmy player is at top.
-    @current_points = []
     @selected_piece = null
     @target_point = null
     Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
@@ -211,24 +218,17 @@ class Chess
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
-      console.log('receive click event on canvas: ', x, y)
       for piece in @current_player.alive_pieces()
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
-          piece.active()
-          @selected_piece = piece
-          @mark_available_target_points()
-          @target_point = null
-          Game.log("selected piece:#{@selected_piece.name}, x,y:#{@selected_piece.point.x},#{@selected_piece.point.y}")
-        else
-          piece.deactive()
+          @select_piece(piece)
+          Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
+          break
 
       for points_in_columns in @points
         for point in points_in_columns
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
-              Game.log("Point (#{point.x},#{point.y}) is blank.")
-              @target_point = PiecePoint.clone(point)
-              @reset_moveable_points()
+              @select_point(point)
               break
     return
 
@@ -238,19 +238,38 @@ class Chess
         point.reset_moveable()
     return
 
-  mark_available_target_points: ->
-    moveable_points = @selected_piece.moveable_points()
+  select_piece: (piece) ->
+    @target_point = null
+    piece.is_selected = true
+    moveable_points = piece.moveable_points()
     Game.log("moveable points:#{moveable_points.length}")
+    for piece2 in @current_player.alive_pieces()
+      if piece2 != piece
+        piece2.is_selected = false
+
     for points_in_columns in @points
       for point in points_in_columns
+        point.is_selected = false
         if point.is_in(moveable_points)
           point.mark_moveable()
         else
           point.reset_moveable()
     return
 
+  select_point: (point) ->
+    point.is_selected = true
+    @target_point = point
+    for points_in_columns in @points
+      for point2 in points_in_columns
+        if point2 != point
+          point2.is_selected = false
+    @reset_moveable_points()
+    return
+
+
+
 $ ->
   chess_game = new Chess()
-  window.t = chess_game
+  window.game = chess_game # Use game.debug() to print debug info in browser console.
 
   chess_game.init()

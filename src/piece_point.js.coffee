@@ -8,6 +8,7 @@ class PiecePoint
     @y = y
     @is_hover = false
     @moveable = false
+    @is_selected = false
     @state = null # null means blank, it may be point to a red/black piece.
 
   x_in_world: ->

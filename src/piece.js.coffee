@@ -16,8 +16,7 @@ class Piece
     @point = point
 
   move_to_point: (target_point) ->
-    @target_point = PiecePoint.clone(target_point)
-    target_point = null
+    @target_point = target_point #PiecePoint.clone(target_point)
     return
 
   update: (dt) ->
@@ -29,8 +28,8 @@ class Piece
         @point.y -= 1 if @target_point.y < @point.y
         @point.y += 1 if @target_point.y > @point.y
       if @target_point.x == @point.x && @target_point.y == @point.y
-        @target_point = null
-        @deactive()
+        @target_point.is_selected = false
+        @is_selected = false
     return
 
   renderTo: (ctx) ->
