@@ -50,6 +50,7 @@ class Piece
     ctx.fillStyle = '#FFF'
     ctx.textAlign = 'center'
     ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
+    return
 
   label: ->
     l = null

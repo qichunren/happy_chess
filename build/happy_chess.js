@@ -98,7 +98,7 @@
       ctx.font = '20pt Calibri';
       ctx.fillStyle = '#FFF';
       ctx.textAlign = 'center';
-      return ctx.fillText(this.label(), this.point.x_in_world(), this.point.y_in_world() + 10);
+      ctx.fillText(this.label(), this.point.x_in_world(), this.point.y_in_world() + 10);
     };
 
     Piece.prototype.label = function() {
@@ -670,7 +670,7 @@
     };
 
     Chess.prototype.fill_points = function() {
-      var column_array, row_array, x, y, _i, _j, _k, _len, _ref, _ref1, _results, _results1, _results2;
+      var column_array, row_array, x, y, _base, _i, _j, _k, _l, _len, _len1, _ref, _ref1, _results, _results1;
       column_array = (function() {
         _results = [];
         for (var _i = 0, _ref = this.columns - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
@@ -681,21 +681,14 @@
         for (var _j = 0, _ref1 = this.rows - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; 0 <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
         return _results1;
       }).apply(this);
-      _results2 = [];
       for (_k = 0, _len = row_array.length; _k < _len; _k++) {
         y = row_array[_k];
-        _results2.push((function() {
-          var _base, _l, _len1, _results3;
-          _results3 = [];
-          for (_l = 0, _len1 = column_array.length; _l < _len1; _l++) {
-            x = column_array[_l];
-            (_base = this.points)[x] || (_base[x] = []);
-            _results3.push(this.points[x].push(new PiecePoint(x, y)));
-          }
-          return _results3;
-        }).call(this));
+        for (_l = 0, _len1 = column_array.length; _l < _len1; _l++) {
+          x = column_array[_l];
+          (_base = this.points)[x] || (_base[x] = []);
+          this.points[x].push(new PiecePoint(x, y));
+        }
       }
-      return _results2;
     };
 
     Chess.prototype.init = function() {
@@ -703,7 +696,7 @@
       this.setupPlayers();
       this.setupPieces();
       this.setupEventListener();
-      return this.main();
+      this.main();
     };
 
     Chess.prototype.drawMap = function() {
@@ -779,13 +772,13 @@
       this.ctx.beginPath();
       this.ctx.moveTo(s4_point.x_in_world(), s4_point.y_in_world());
       this.ctx.lineTo(s44_point.x_in_world(), s44_point.y_in_world());
-      return this.ctx.stroke();
+      this.ctx.stroke();
     };
 
     Chess.prototype.setupPlayers = function() {
       this.player_red = new Player('red');
       this.player_black = new Player('black');
-      return this.current_player = this.player_red;
+      this.current_player = this.player_red;
     };
 
     Chess.prototype.setupPieces = function() {
@@ -834,7 +827,7 @@
           return _results;
         };
       })(this));
-      return this.canvas_element.addEventListener('click', (function(_this) {
+      this.canvas_element.addEventListener('click', (function(_this) {
         return function(event) {
           var piece, point, points_in_columns, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
           x = event.pageX - _this.canvasElemLeft;
@@ -882,14 +875,12 @@
     };
 
     Chess.prototype.mark_available_target_points = function() {
-      var target_point, _i, _len, _ref, _results;
+      var target_point, _i, _len, _ref;
       _ref = this.selected_piece.moveable_points();
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         target_point = _ref[_i];
-        _results.push(this.point(target_point.x, target_point.y).mark_moveable());
+        this.point(target_point.x, target_point.y).mark_moveable();
       }
-      return _results;
     };
 
     return Chess;

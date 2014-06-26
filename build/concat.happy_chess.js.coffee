@@ -70,6 +70,7 @@ class Piece
     ctx.fillStyle = '#FFF'
     ctx.textAlign = 'center'
     ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
+    return
 
   label: ->
     l = null
@@ -374,6 +375,7 @@ class Chess
       for x in column_array
         @points[x] ||= []
         @points[x].push(new PiecePoint(x, y))
+    return
 
   init: ->
     @fill_points()
@@ -381,6 +383,7 @@ class Chess
     @setupPieces()
     @setupEventListener()
     @main()
+    return
 
   drawMap: ->
     # First draw 4 edge borders
@@ -464,11 +467,13 @@ class Chess
     @ctx.moveTo(s4_point.x_in_world(), s4_point.y_in_world())
     @ctx.lineTo(s44_point.x_in_world(), s44_point.y_in_world())
     @ctx.stroke()
+    return
 
   setupPlayers: ->
     @player_red = new Player('red')
     @player_black = new Player('black')
     @current_player = @player_red
+    return
 
   setupPieces: ->
     @pieces.push.apply(@pieces, @player_red.spawn_pieces())
@@ -514,11 +519,12 @@ class Chess
             if @is_blank_point(point)
               @target_point = PiecePoint.clone(point)
               break
+    return
 
   mark_available_target_points: ->
     for target_point in @selected_piece.moveable_points()
       @point(target_point.x, target_point.y).mark_moveable()
-
+    return
 
 $ ->
   chess_game = new Chess()
