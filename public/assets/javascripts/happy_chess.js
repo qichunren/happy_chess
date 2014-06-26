@@ -419,17 +419,17 @@
           }
           break;
         case 'chief':
-          if (this.point.x - 1 >= 3 && this.point.y - 1 >= 0) {
-            target_points.push(new PiecePoint(this.point.x - 1, this.point.y - 1));
+          if (this.point.y - 1 >= 0) {
+            target_points.push(new PiecePoint(this.point.x, this.point.y - 1));
           }
-          if (this.point.x - 1 >= 3 && this.point.y + 1 <= 2) {
-            target_points.push(new PiecePoint(this.point.x - 1, this.point.y + 1));
+          if (this.point.y + 1 <= 2) {
+            target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
           }
-          if (this.point.x + 1 <= 5 && this.point.y + 1 <= 2) {
-            target_points.push(new PiecePoint(this.point.x + 1, this.point.y + 1));
+          if (this.point.x + 1 <= 5) {
+            target_points.push(new PiecePoint(this.point.x + 1, this.point.y));
           }
-          if (this.point.x + 1 <= 5 && this.point.y - 1 >= 0) {
-            target_points.push(new PiecePoint(this.point.x + 1, this.point.y - 1));
+          if (this.point.x - 1 >= 3) {
+            target_points.push(new PiecePoint(this.point.x - 1, this.point.y));
           }
           break;
         case 'gun':
@@ -485,6 +485,9 @@
       this.moveable = false;
       this.is_selected = false;
       this.state = null;
+      this.marker_size1 = 12;
+      this.marker_size2 = 8;
+      this.marker_size3 = 6;
     }
 
     PiecePoint.prototype.x_in_world = function() {
@@ -522,16 +525,23 @@
     PiecePoint.prototype.renderTo = function(ctx) {
       if (this.is_hover) {
         ctx.beginPath();
-        ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#003300';
+        ctx.rect(this.x_in_world() - this.marker_size3 / 2, this.y_in_world() - this.marker_size3 / 2, this.marker_size3, this.marker_size3);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#FF9900';
         ctx.stroke();
       }
       if (this.moveable) {
         ctx.beginPath();
-        ctx.arc(this.x_in_world(), this.y_in_world(), 4, 0, 2 * Math.PI, false);
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#FF9900';
+        ctx.rect(this.x_in_world() - this.marker_size2 / 2, this.y_in_world() - this.marker_size2 / 2, this.marker_size2, this.marker_size2);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'green';
+        ctx.stroke();
+      }
+      if (this.is_selected) {
+        ctx.beginPath();
+        ctx.rect(this.x_in_world() - this.marker_size1 / 2, this.y_in_world() - this.marker_size1 / 2, this.marker_size1, this.marker_size1);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'blue';
         return ctx.stroke();
       }
     };
@@ -684,13 +694,19 @@
   window.Player = Player;
 
   Chess = (function() {
+    Chess.defer = function(callback) {
+      setTimeout(function() {
+        return callback();
+      }, 100);
+    };
+
     Chess.prototype.debug = function() {
       var piece, point, points_in_columns, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       _ref = this.pieces;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         piece = _ref[_i];
         if (piece.is_selected) {
-          console.log("Selected piece is " + piece.name_symbol + " (" + piece.point.x + "," + piece.point.y + ")");
+          console.log("[for] Selected piece is " + piece.name_symbol + " (" + piece.point.x + "," + piece.point.y + ")");
         }
       }
       _ref1 = this.points;
@@ -699,9 +715,15 @@
         for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
           point = points_in_columns[_k];
           if (point.is_selected) {
-            console.log("Selected point is (" + point.x + "," + point.y + ")");
+            console.log("[for] Selected point is (" + point.x + "," + point.y + ")");
           }
         }
+      }
+      if (this.selected_piece) {
+        console.log("      Selected piece is " + this.selected_piece.name_symbol + " (" + this.selected_piece.point.x + "," + this.selected_piece.point.y + ")");
+      }
+      if (this.selected_point) {
+        console.log("      Selected point is (" + this.selected_point.x + "," + this.selected_point.y + ")");
       }
     };
 
@@ -716,16 +738,15 @@
     };
 
     Chess.prototype.update = function(dt) {
-      var piece, _i, _len, _ref;
-      _ref = this.pieces;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        piece = _ref[_i];
-        if (piece.is_selected) {
-          if (this.selected_point) {
-            piece.move_to_point(this.selected_point);
-            piece.update(dt);
-          }
-        }
+      if (this.selected_piece && this.selected_point) {
+        this.selected_piece.move_to_point(this.selected_point);
+        this.selected_piece.update(dt);
+        Chess.defer((function(_this) {
+          return function() {
+            _this.selected_piece = null;
+            return _this.selected_point = null;
+          };
+        })(this));
       }
     };
 
@@ -1017,6 +1038,7 @@
       var moveable_points, piece2, point, points_in_columns, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       this.selected_point = null;
       piece.is_selected = true;
+      this.selected_piece = piece;
       moveable_points = piece.moveable_points();
       Game.log("moveable points:" + moveable_points.length);
       _ref = this.current_player.alive_pieces();

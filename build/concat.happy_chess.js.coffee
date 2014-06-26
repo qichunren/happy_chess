@@ -363,13 +363,24 @@ window.Player = Player
 #### Another file ####
 
 class Chess
+  @defer: (callback) ->
+    setTimeout ->
+      callback()
+    , 100
+    return
 
   debug: ->
     for piece in @pieces
       if piece.is_selected
-        console.log("Selected piece is #{piece.name_symbol} (#{piece.point.x},#{piece.point.y})")
+        console.log("[for] Selected piece is #{piece.name_symbol} (#{piece.point.x},#{piece.point.y})")
+    for points_in_columns in @points
+      for point in points_in_columns
+        if point.is_selected
+          console.log("[for] Selected point is (#{point.x},#{point.y})")
+    if @selected_piece
+      console.log("      Selected piece is #{@selected_piece.name_symbol} (#{@selected_piece.point.x},#{@selected_piece.point.y})")
     if @selected_point
-      console.log("Selected point is (#{@selected_point.x},#{@selected_point.y})")
+      console.log("      Selected point is (#{@selected_point.x},#{@selected_point.y})")
     return
 
 
@@ -383,18 +394,12 @@ class Chess
     return
 
   update: (dt) ->
-    for piece in @pieces
-      if piece.is_selected
-        if @selected_point
-          piece.move_to_point(@selected_point)
-          piece.update(dt)
-#    has_selected_point = false
-#    for points_in_columns in @points
-#      for point in points_in_columns
-#        if point.is_selected
-#          has_selected_point = true
-#        break
-#    @selected_point = null if !has_selected_point
+    if @selected_piece && @selected_point
+      @selected_piece.move_to_point(@selected_point)
+      @selected_piece.update(dt)
+      Chess.defer =>
+        @selected_piece = null
+        @selected_point = null
 
     return
 
@@ -611,6 +616,7 @@ class Chess
   select_piece: (piece) ->
     @selected_point = null
     piece.is_selected = true
+    @selected_piece = piece
     moveable_points = piece.moveable_points()
     Game.log("moveable points:#{moveable_points.length}")
     for piece2 in @current_player.alive_pieces()
