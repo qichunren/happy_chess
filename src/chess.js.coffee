@@ -90,6 +90,7 @@ class Chess
     @setupPieces()
     @setupEventListener()
     @main()
+    $("#debug_panel").hide() if !Game.is_debug
     return
 
   drawMap: ->

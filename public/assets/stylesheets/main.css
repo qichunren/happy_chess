@@ -1,13 +1,26 @@
-.row {
-    border: 2px solid #000;
-}
-.panel {
-    width: 40px;
-    height: 40px;
-    float: left;
-    border-right: 2px solid #000;
+body {
+    background: url('../images/bg.png') repeat;
 }
 
-.panel:first-child {
-    border-left: 2px solid #000;
+#debug_panel {
+    float: right;
+    margin-right: 10px;
+    position: relative;
+    width: 250px;
+    overflow: hidden;
+}
+
+#clear_log {
+    position: absolute;
+    bottom: 5px;
+    left: 2px;
+    height: 26px;
+}
+
+#debug {
+    width:248px;
+    height:650px;
+    border:1px solid #BDBDBD;
+    background-color: #000;
+    color: #FFF;
 }

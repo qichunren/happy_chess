@@ -9,7 +9,10 @@ head
   script(src='/assets/javascripts/happy_chess.js')
 
 body
-  canvas#chess_game(width="800" height="680" style="border:1px solid #c3c3c3;")
+  canvas#chess_game(width="600" height="650" style="border:1px solid #c3c3c3;background:#FFF;")
+  div#debug_panel
+    button#clear_log(onclick="$('#debug').val('').focus()") Clear
+    textarea#debug
 
   script.
     var socket = io("#{socketurl}");

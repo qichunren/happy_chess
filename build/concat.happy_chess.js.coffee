@@ -14,7 +14,11 @@ Game.piece_padding = 60
 Game.radius = 26
 Game.is_debug = true
 Game.log = (message) ->
-  console.log('Chess: ', message) if Game.is_debug
+  # console.log('Chess: ', message) if Game.is_debug
+  if $("#debug").val() == ''
+    $("#debug").val(message) if Game.is_debug
+  else
+    $("#debug").val($("#debug").val() + "\n" +message) if Game.is_debug
 
 #### Another file ####
 
@@ -438,6 +442,7 @@ class Chess
     @setupPieces()
     @setupEventListener()
     @main()
+    $("#debug_panel").hide() if !Game.is_debug
     return
 
   drawMap: ->

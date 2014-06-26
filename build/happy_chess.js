@@ -26,8 +26,14 @@
   Game.is_debug = true;
 
   Game.log = function(message) {
-    if (Game.is_debug) {
-      return console.log('Chess: ', message);
+    if ($("#debug").val() === '') {
+      if (Game.is_debug) {
+        return $("#debug").val(message);
+      }
+    } else {
+      if (Game.is_debug) {
+        return $("#debug").val($("#debug").val() + "\n" + message);
+      }
     }
   };
 
@@ -802,6 +808,9 @@
       this.setupPieces();
       this.setupEventListener();
       this.main();
+      if (!Game.is_debug) {
+        $("#debug_panel").hide();
+      }
     };
 
     Chess.prototype.drawMap = function() {
