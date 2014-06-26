@@ -398,7 +398,20 @@
           }
           break;
         case 'knight':
-          [];
+          if (this.point.is_at(3, 0)) {
+            target_points.push(new PiecePoint(4, 1));
+          } else if (this.point.is_at(3, 2)) {
+            target_points.push(new PiecePoint(4, 1));
+          } else if (this.point.is_at(5, 2)) {
+            target_points.push(new PiecePoint(4, 1));
+          } else if (this.point.is_at(5, 0)) {
+            target_points.push(new PiecePoint(4, 1));
+          } else if (this.point.is_at(4, 1)) {
+            target_points.push(new PiecePoint(3, 0));
+            target_points.push(new PiecePoint(3, 2));
+            target_points.push(new PiecePoint(5, 2));
+            target_points.push(new PiecePoint(5, 0));
+          }
           break;
         case 'chief':
           [];
@@ -451,6 +464,10 @@
 
     PiecePoint.prototype.y_in_world = function() {
       return ((Game.rows - 1) - this.y) * Game.piece_padding + Game.margin_top;
+    };
+
+    PiecePoint.prototype.is_at = function(x, y) {
+      return this.x === x && this.y === y;
     };
 
     PiecePoint.prototype.is_same = function(other) {

@@ -16,6 +16,9 @@ class PiecePoint
   y_in_world: ->
     ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top
 
+  is_at: (x, y) ->
+    @x == x && @y == y
+
   is_same: (other) ->
     @x == other.x && @y == other.y
 

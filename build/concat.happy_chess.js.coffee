@@ -149,8 +149,19 @@ class Piece
         target_points.push(new PiecePoint(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
         target_points.push(new PiecePoint(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
       when 'knight'
-        # todo
-        []
+        if @point.is_at(3, 0)
+          target_points.push(new PiecePoint(4, 1))
+        else if @point.is_at(3, 2)
+          target_points.push(new PiecePoint(4, 1))
+        else if @point.is_at(5, 2)
+          target_points.push(new PiecePoint(4, 1))
+        else if @point.is_at(5, 0)
+          target_points.push(new PiecePoint(4, 1))
+        else if @point.is_at(4, 1)
+          target_points.push(new PiecePoint(3, 0))
+          target_points.push(new PiecePoint(3, 2))
+          target_points.push(new PiecePoint(5, 2))
+          target_points.push(new PiecePoint(5, 0))
       when 'chief'
         # todo
         []
@@ -193,6 +204,9 @@ class PiecePoint
 
   y_in_world: ->
     ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top
+
+  is_at: (x, y) ->
+    @x == x && @y == y
 
   is_same: (other) ->
     @x == other.x && @y == other.y
