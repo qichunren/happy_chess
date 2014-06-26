@@ -56,7 +56,7 @@ class Piece
 
   label: ->
     l = null
-    if @name == 'car'
+    if @name == 'carriage'
       l = if @color == 'red' then '车' else '車'
     if @name == 'horse'
       l = if @color == 'red' then '马' else '馬'
@@ -74,9 +74,9 @@ class Piece
 
   start_point: ->
     switch @name_symbol
-      when 'car_l'
+      when 'carriage_l'
         if @color == 'red' then {x: 0, y: 0} else Piece.reverse_point({x: 0, y: 0})
-      when 'car_r'
+      when 'carriage_r'
         if @color == 'red' then {x: 8, y: 0} else Piece.reverse_point({x: 8, y: 0})
       when 'horse_l'
         if @color == 'red' then {x: 1, y: 0} else Piece.reverse_point({x: 1, y: 0})
@@ -110,11 +110,13 @@ class Piece
   moveable_points: ->
     target_points = []
     switch @name
-      when 'car'
+      when 'carriage'
         for x in [0..8]
           target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
         for y in [0..9]
           target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
+
+
     target_points
 
   active: ->

@@ -105,7 +105,7 @@
     Piece.prototype.label = function() {
       var l;
       l = null;
-      if (this.name === 'car') {
+      if (this.name === 'carriage') {
         l = this.color === 'red' ? '车' : '車';
       }
       if (this.name === 'horse') {
@@ -131,7 +131,7 @@
 
     Piece.prototype.start_point = function() {
       switch (this.name_symbol) {
-        case 'car_l':
+        case 'carriage_l':
           if (this.color === 'red') {
             return {
               x: 0,
@@ -144,7 +144,7 @@
             });
           }
           break;
-        case 'car_r':
+        case 'carriage_r':
           if (this.color === 'red') {
             return {
               x: 8,
@@ -345,7 +345,7 @@
       var target_points, x, y, _i, _j;
       target_points = [];
       switch (this.name) {
-        case 'car':
+        case 'carriage':
           for (x = _i = 0; _i <= 8; x = ++_i) {
             if (x !== this.point.x) {
               target_points.push(new PiecePoint(x, this.point.y));

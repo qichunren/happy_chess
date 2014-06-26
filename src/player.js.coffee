@@ -6,8 +6,8 @@ class Player
     else if @color == 'black'
       @name = "黑方#{name}"
     @pieces = {
-      car_l      : null,
-      car_r      : null,
+      carriage_l : null,
+      carriage_r : null,
       horse_l    : null,
       horse_r    : null,
       elephant_l : null,
@@ -43,8 +43,8 @@ class Player
       return @piece_array_alive
 
   spawn_pieces: ->
-    @pieces.car_l      = new Piece('car_l', @color)
-    @pieces.car_r      = new Piece('car_r', @color)
+    @pieces.carriage_l = new Piece('carriage_l', @color)
+    @pieces.carriage_r = new Piece('carriage_r', @color)
     @pieces.horse_l    = new Piece('horse_l', @color)
     @pieces.horse_r    = new Piece('horse_r', @color)
     @pieces.elephant_l = new Piece('elephant_l', @color)
