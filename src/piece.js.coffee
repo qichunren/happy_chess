@@ -12,11 +12,8 @@ class Piece
     @point = new PiecePoint(@start_point().x, @start_point().y)
     @target_point = null
 
-  set_point: (point) ->
-    @point = point
-
   move_to_point: (target_point) ->
-    @target_point = target_point #PiecePoint.clone(target_point)
+    @target_point = target_point
     return
 
   update: (dt) ->
@@ -45,7 +42,6 @@ class Piece
         ctx.strokeStyle = '#BDBDBD'
       else
         ctx.strokeStyle = '#003300'
-
     ctx.stroke()
     ctx.font = '20pt Calibri'
     ctx.fillStyle = '#FFF'

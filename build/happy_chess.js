@@ -56,10 +56,6 @@
       this.target_point = null;
     }
 
-    Piece.prototype.set_point = function(point) {
-      return this.point = point;
-    };
-
     Piece.prototype.move_to_point = function(target_point) {
       this.target_point = target_point;
     };
@@ -725,8 +721,8 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         piece = _ref[_i];
         if (piece.is_selected) {
-          if (this.target_point) {
-            piece.move_to_point(this.target_point);
+          if (this.selected_point) {
+            piece.move_to_point(this.selected_point);
             piece.update(dt);
           }
         }
@@ -780,7 +776,7 @@
       this.player_black = null;
       this.current_player = null;
       this.selected_piece = null;
-      this.target_point = null;
+      this.selected_point = null;
       Game.log("panel width: " + this.panel_width + ", height: " + this.panel_height);
     }
 
@@ -1019,7 +1015,7 @@
 
     Chess.prototype.select_piece = function(piece) {
       var moveable_points, piece2, point, points_in_columns, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-      this.target_point = null;
+      this.selected_point = null;
       piece.is_selected = true;
       moveable_points = piece.moveable_points();
       Game.log("moveable points:" + moveable_points.length);
@@ -1048,7 +1044,7 @@
     Chess.prototype.select_point = function(point) {
       var point2, points_in_columns, _i, _j, _len, _len1, _ref;
       point.is_selected = true;
-      this.target_point = point;
+      this.selected_point = point;
       _ref = this.points;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         points_in_columns = _ref[_i];

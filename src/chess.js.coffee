@@ -23,8 +23,8 @@ class Chess
   update: (dt) ->
     for piece in @pieces
       if piece.is_selected
-        if @target_point
-          piece.move_to_point(@target_point)
+        if @selected_point
+          piece.move_to_point(@selected_point)
           piece.update(dt)
     return
 
@@ -69,7 +69,7 @@ class Chess
     @player_black = null
     @current_player = null # current player is at bottom, enmy player is at top.
     @selected_piece = null
-    @target_point = null
+    @selected_point = null
     Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
@@ -239,7 +239,7 @@ class Chess
     return
 
   select_piece: (piece) ->
-    @target_point = null
+    @selected_point = null
     piece.is_selected = true
     moveable_points = piece.moveable_points()
     Game.log("moveable points:#{moveable_points.length}")
@@ -258,7 +258,7 @@ class Chess
 
   select_point: (point) ->
     point.is_selected = true
-    @target_point = point
+    @selected_point = point
     for points_in_columns in @points
       for point2 in points_in_columns
         if point2 != point
