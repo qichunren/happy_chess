@@ -29,7 +29,7 @@ class Piece
 
   renderTo:(ctx) ->
     ctx.beginPath()
-    ctx.arc(@point.x_in_world(), @point.y_in_world(), ChineseChess.radius, 0, 2 * Math.PI, false)
+    ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius, 0, 2 * Math.PI, false)
     ctx.fillStyle = @color
     ctx.fill()
     ctx.lineWidth = 5

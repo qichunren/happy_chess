@@ -2,19 +2,33 @@
   var Chess, Piece, PiecePoint, requestAnimFrame,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  window.ChineseChess = {};
+  requestAnimFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })();
 
-  ChineseChess.columns = 9;
+  window.Game = {};
 
-  ChineseChess.rows = 10;
+  Game.columns = 9;
 
-  ChineseChess.margin_top = 50;
+  Game.rows = 10;
 
-  ChineseChess.margin_left = 50;
+  Game.margin_top = 50;
 
-  ChineseChess.piece_padding = 60;
+  Game.margin_left = 50;
 
-  ChineseChess.radius = 26;
+  Game.piece_padding = 60;
+
+  Game.radius = 26;
+
+  Game.is_debug = true;
+
+  Game.log = function(message) {
+    if (Game.is_debug) {
+      return console.log('Chess: ', message);
+    }
+  };
 
   Piece = (function() {
     function Piece(name_symbol, color) {
@@ -61,7 +75,7 @@
 
     Piece.prototype.renderTo = function(ctx) {
       ctx.beginPath();
-      ctx.arc(this.point.x_in_world(), this.point.y_in_world(), ChineseChess.radius, 0, 2 * Math.PI, false);
+      ctx.arc(this.point.x_in_world(), this.point.y_in_world(), Game.radius, 0, 2 * Math.PI, false);
       ctx.fillStyle = this.color;
       ctx.fill();
       ctx.lineWidth = 5;
@@ -218,12 +232,6 @@
 
   })();
 
-  requestAnimFrame = (function() {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };
-  })();
-
   PiecePoint = (function() {
     function PiecePoint(x, y) {
       this.x = x;
@@ -232,11 +240,11 @@
     }
 
     PiecePoint.prototype.x_in_world = function() {
-      return this.x * ChineseChess.piece_padding + ChineseChess.margin_left;
+      return this.x * Game.piece_padding + Game.margin_left;
     };
 
     PiecePoint.prototype.y_in_world = function() {
-      return ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top;
+      return ((Game.rows - 1) - this.y) * Game.piece_padding + Game.margin_top;
     };
 
     PiecePoint.prototype.is_same = function(other) {
@@ -274,7 +282,7 @@
     };
 
     PiecePoint.prototype.is_at_right_edge = function() {
-      return this.x === (ChineseChess.columns - 1);
+      return this.x === (Game.columns - 1);
     };
 
     PiecePoint.prototype.is_at_self_river = function() {
@@ -287,15 +295,15 @@
 
     PiecePoint.prototype.toPosition = function() {
       return {
-        x: this.x * ChineseChess.piece_padding,
-        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding
+        x: this.x * Game.piece_padding,
+        y: ((Game.rows - 1) - this.y) * Game.piece_padding
       };
     };
 
     PiecePoint.prototype.toPositionInWorld = function() {
       return {
-        x: this.x * ChineseChess.piece_padding + ChineseChess.margin_left,
-        y: ((ChineseChess.rows - 1) - this.y) * ChineseChess.piece_padding + ChineseChess.margin_top
+        x: this.x * Game.piece_padding + Game.margin_left,
+        y: ((Game.rows - 1) - this.y) * Game.piece_padding + Game.margin_top
       };
     };
 
@@ -361,7 +369,6 @@
         canvas_id = 'chess_game';
       }
       this.main = __bind(this.main, this);
-      this.debug = true;
       this.lastTime = Date.now();
       this.canvas_element = document.getElementById(canvas_id);
       this.canvasElemLeft = this.canvas_element.offsetLeft;
@@ -369,20 +376,18 @@
       this.ctx = this.canvas_element.getContext('2d');
       this.ctx_width = 800;
       this.ctx_height = 600;
-      this.margin_top = ChineseChess.margin_top;
-      this.margin_left = ChineseChess.margin_left;
-      this.piece_margin = ChineseChess.piece_padding;
-      this.columns = ChineseChess.columns;
-      this.rows = ChineseChess.rows;
+      this.margin_top = Game.margin_top;
+      this.margin_left = Game.margin_left;
+      this.piece_margin = Game.piece_padding;
+      this.columns = Game.columns;
+      this.rows = Game.rows;
       this.panel_width = (this.columns - 1) * this.piece_margin;
       this.panel_height = (this.rows - 1) * this.piece_margin;
       this.all_points = [];
       this.current_points = [];
       this.selected_piece = null;
       this.target_point;
-      if (this.debug) {
-        console.log("panel width, height: ", this.panel_width, this.panel_height);
-      }
+      Game.log("panel width, height: ", this.panel_width, this.panel_height);
     }
 
     Chess.prototype.is_blank_point = function(point) {
@@ -547,7 +552,7 @@
           _ref = _this.pieces;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             piece = _ref[_i];
-            if (x >= piece.point.x_in_world() - ChineseChess.radius && x <= piece.point.x_in_world() + ChineseChess.radius && y >= piece.point.y_in_world() - ChineseChess.radius && y <= piece.point.y_in_world() + ChineseChess.radius) {
+            if (x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius) {
               piece.hover();
             } else {
               piece.hout();
@@ -557,7 +562,7 @@
           _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             every_point = _ref1[_j];
-            if (x >= every_point.x_in_world() - ChineseChess.radius && x <= every_point.x_in_world() + ChineseChess.radius && y >= every_point.y_in_world() - ChineseChess.radius && y <= every_point.y_in_world() + ChineseChess.radius) {
+            if (x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius) {
               if (_this.is_blank_point(every_point)) {
                 _results.push(every_point.hover());
               } else {
@@ -579,7 +584,7 @@
           _ref = _this.pieces;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             piece = _ref[_i];
-            if (x >= piece.point.x_in_world() - ChineseChess.radius && x <= piece.point.x_in_world() + ChineseChess.radius && y >= piece.point.y_in_world() - ChineseChess.radius && y <= piece.point.y_in_world() + ChineseChess.radius) {
+            if (x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius) {
               piece.active();
               _this.selected_piece = piece;
             } else {
@@ -590,7 +595,7 @@
           _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             every_point = _ref1[_j];
-            if (x >= every_point.x_in_world() - ChineseChess.radius && x <= every_point.x_in_world() + ChineseChess.radius && y >= every_point.y_in_world() - ChineseChess.radius && y <= every_point.y_in_world() + ChineseChess.radius) {
+            if (x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius) {
               if (_this.is_blank_point(every_point)) {
                 _this.target_point = every_point;
                 break;

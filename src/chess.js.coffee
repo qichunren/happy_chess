@@ -1,9 +1,3 @@
-requestAnimFrame = (->
-  window.requestAnimationFrame or window.webkitRequestAnimationFrame or window.mozRequestAnimationFrame or window.oRequestAnimationFrame or window.msRequestAnimationFrame or (callback) ->
-    window.setTimeout callback, 1000 / 60
-    return
-)()
-
 class PiecePoint
 
   constructor: (x, y) ->
@@ -12,10 +6,10 @@ class PiecePoint
     @is_hover = false
 
   x_in_world: ->
-    @x * ChineseChess.piece_padding + ChineseChess.margin_left
+    @x * Game.piece_padding + Game.margin_left
 
   y_in_world: ->
-    ((ChineseChess.rows-1) - @y) * ChineseChess.piece_padding + ChineseChess.margin_top
+    ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top
 
   is_same: (other) ->
     @x == other.x && @y == other.y
@@ -44,7 +38,7 @@ class PiecePoint
     @x == 0
 
   is_at_right_edge: ->
-    @x == (ChineseChess.columns - 1)
+    @x == (Game.columns - 1)
 
   is_at_self_river: ->
     @y == 4
@@ -53,10 +47,10 @@ class PiecePoint
     @y == 5
 
   toPosition: ->
-    {x : @x * ChineseChess.piece_padding, y : ((ChineseChess.rows-1) - @y) * ChineseChess.piece_padding  }
+    {x : @x * Game.piece_padding, y : ((Game.rows-1) - @y) * Game.piece_padding  }
 
   toPositionInWorld: ->
-    {x : @x * ChineseChess.piece_padding + ChineseChess.margin_left, y : ((ChineseChess.rows-1) - @y) * ChineseChess.piece_padding + ChineseChess.margin_top }
+    {x : @x * Game.piece_padding + Game.margin_left, y : ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top }
 
 class Chess
 
@@ -79,8 +73,6 @@ class Chess
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
 
-
-
   render: ->
     @ctx.fillStyle = '#FFF';
     @ctx.fillRect(0, 0, @ctx_width, @ctx_height)
@@ -92,9 +84,7 @@ class Chess
     for piece in @pieces
       piece.renderTo(@ctx)
 
-
   constructor: (canvas_id = 'chess_game') ->
-    @debug = true
     @lastTime = Date.now()
     @canvas_element = document.getElementById(canvas_id)
     @canvasElemLeft = @canvas_element.offsetLeft
@@ -102,13 +92,13 @@ class Chess
     @ctx = @canvas_element.getContext('2d')
     @ctx_width = 800
     @ctx_height = 600
-    @margin_top = ChineseChess.margin_top
-    @margin_left = ChineseChess.margin_left
+    @margin_top = Game.margin_top
+    @margin_left = Game.margin_left
 
-    @piece_margin = ChineseChess.piece_padding
+    @piece_margin = Game.piece_padding
 
-    @columns = ChineseChess.columns
-    @rows = ChineseChess.rows
+    @columns = Game.columns
+    @rows = Game.rows
 
     @panel_width = (@columns - 1) * @piece_margin
     @panel_height = (@rows - 1) * @piece_margin
@@ -117,8 +107,7 @@ class Chess
     @current_points = []
     @selected_piece = null
     @target_point
-    console.log("panel width, height: ", @panel_width, @panel_height) if @debug
-
+    Game.log("panel width, height: ", @panel_width, @panel_height)
 
   is_blank_point: (point) ->
     found = false
@@ -244,13 +233,13 @@ class Chess
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
       for piece in @pieces
-        if x >= piece.point.x_in_world() - ChineseChess.radius && x <= piece.point.x_in_world() + ChineseChess.radius && y >= piece.point.y_in_world() - ChineseChess.radius && y <= piece.point.y_in_world() + ChineseChess.radius
+        if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           piece.hover()
         else
           piece.hout()
 
       for every_point in @all_points
-        if x >= every_point.x_in_world() - ChineseChess.radius && x <= every_point.x_in_world() + ChineseChess.radius && y >= every_point.y_in_world() - ChineseChess.radius && y <= every_point.y_in_world() + ChineseChess.radius
+        if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             every_point.hover()
         else
@@ -261,19 +250,17 @@ class Chess
       y = event.pageY - @canvasElemTop
       console.log('receive click event on canvas: ', x, y)
       for piece in @pieces
-        if x >= piece.point.x_in_world() - ChineseChess.radius && x <= piece.point.x_in_world() + ChineseChess.radius && y >= piece.point.y_in_world() - ChineseChess.radius && y <= piece.point.y_in_world() + ChineseChess.radius
+        if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           piece.active()
           @selected_piece = piece
         else
           piece.deactive()
 
       for every_point in @all_points
-        if x >= every_point.x_in_world() - ChineseChess.radius && x <= every_point.x_in_world() + ChineseChess.radius && y >= every_point.y_in_world() - ChineseChess.radius && y <= every_point.y_in_world() + ChineseChess.radius
+        if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             @target_point = every_point
             break
-
-
 
 $ ->
   chess_game = new Chess()

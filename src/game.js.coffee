@@ -1,8 +1,17 @@
-window.ChineseChess = {}
+requestAnimFrame = (->
+  window.requestAnimationFrame or window.webkitRequestAnimationFrame or window.mozRequestAnimationFrame or window.oRequestAnimationFrame or window.msRequestAnimationFrame or (callback) ->
+    window.setTimeout callback, 1000 / 60
+    return
+)()
 
-ChineseChess.columns = 9
-ChineseChess.rows = 10
-ChineseChess.margin_top  = 50
-ChineseChess.margin_left = 50
-ChineseChess.piece_padding = 60
-ChineseChess.radius = 26
+window.Game = {}
+
+Game.columns = 9
+Game.rows = 10
+Game.margin_top  = 50
+Game.margin_left = 50
+Game.piece_padding = 60
+Game.radius = 26
+Game.is_debug = true
+Game.log = (message) ->
+  console.log('Chess: ', message) if Game.is_debug
