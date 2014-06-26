@@ -10,6 +10,9 @@ class PiecePoint
     @moveable = false
     @is_selected = false
     @state = null # null means blank, it may be point to a red/black piece.
+    @marker_size1 = 12
+    @marker_size2 = 8
+    @marker_size3 = 6
 
   x_in_world: ->
     @x * Game.piece_padding + Game.margin_left
@@ -37,17 +40,29 @@ class PiecePoint
 
   renderTo:(ctx) ->
     if @is_hover
+#      ctx.beginPath()
+#      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
+#      ctx.lineWidth = 5
+#      ctx.strokeStyle = '#003300'
+#      ctx.stroke()
       ctx.beginPath()
-      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 5
-      ctx.strokeStyle = '#003300'
+      ctx.rect(@x_in_world()-@marker_size3/2, @y_in_world()-@marker_size3/2, @marker_size3, @marker_size3)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#FF9900'
       ctx.stroke()
     if @moveable
       ctx.beginPath()
-      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 5
-      ctx.strokeStyle = '#FF9900'
+      ctx.rect(@x_in_world()-@marker_size2/2, @y_in_world()-@marker_size2/2, @marker_size2, @marker_size2)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = 'green'
       ctx.stroke()
+    if @is_selected
+      ctx.beginPath()
+      ctx.rect(@x_in_world()-@marker_size1/2, @y_in_world()-@marker_size1/2, @marker_size1, @marker_size1)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = 'blue'
+      ctx.stroke()
+
 
   is_in: (points) ->
     is_include = false
