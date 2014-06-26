@@ -20,7 +20,7 @@ server.listen(port, function () {
 
 app.get('/',function(req,res){
     res.render('index',{
-        title:'happyedit',
+        title:'Happy Chess Game',
         socketurl: config.serverurl + ":" + port
     });
 });

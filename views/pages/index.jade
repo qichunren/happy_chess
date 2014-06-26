@@ -3,12 +3,12 @@ head
   meta(charset="utf-8")
   meta(name="viewport" content="width=device-width")
   title #{title}
-  link(href="main.css",rel="stylesheet")
-  script(src="/jquery-1.10.2.min.js")
+  link(href="/assets/stylesheets/main.css",rel="stylesheet")
+  script(src="/assets/javascripts/jquery-1.10.2.min.js")
   script(src="/socket.io/socket.io.js")
 
   link(rel='stylesheet', href='main.css')
-  script(src='/chess.js')
+  script(src='/assets/javascripts/happy_chess.min.js')
 
 body
   canvas#chess_game(width="800" height="680" style="border:1px solid #c3c3c3;")

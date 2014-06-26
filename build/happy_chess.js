@@ -2,12 +2,6 @@
   var Chess, Piece, PiecePoint, requestAnimFrame,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  requestAnimFrame = (function() {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };
-  })();
-
   window.ChineseChess = {};
 
   ChineseChess.columns = 9;
@@ -21,6 +15,12 @@
   ChineseChess.piece_padding = 60;
 
   ChineseChess.radius = 26;
+
+  requestAnimFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })();
 
   PiecePoint = (function() {
     function PiecePoint(x, y) {
