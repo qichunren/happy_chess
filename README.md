@@ -10,6 +10,20 @@ Use `grunt` to build asstets.
 
 Use `grunt watch` to auto build assets during programing.
 
+## TODO List
+
+- [x] Chess panel draw.
+- [x] Chess pieces draw.
+- [x] Pieces basic movement.
+- [ ] Piece movement rule.
+- [ ] Piece eat rule.
+- [ ] Game win rule.
+- [ ] Game turn back mechanism.
+- [ ] Game play steps record into history.
+- [ ] Realtime online players play.
+- [ ] Guests go into room to watch game.
+- [ ] Multiple game rooms.
+
 
 ## License
 
