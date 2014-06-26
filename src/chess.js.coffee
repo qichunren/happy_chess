@@ -267,8 +267,18 @@ class Chess
           point.reset_moveable()
     return
 
+  cancel_select_piece: ->
+    if @selected_piece
+      @selected_piece = null
+      for piece in @current_player.alive_pieces()
+        piece.is_selected = false
+
   select_point: (point) ->
     if @is_blank_point(point)
+      if @selected_piece
+        moveable_points = @selected_piece.moveable_points()
+        @cancel_select_piece() if !point.is_in(moveable_points)
+
       point.is_selected = true
       @selected_point = point
       for points_in_columns in @points
