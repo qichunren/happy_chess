@@ -52,8 +52,9 @@ class Piece
       if @target_point.y != @point.y
         @point.y -= 1 if @target_point.y < @point.y
         @point.y += 1 if @target_point.y > @point.y
-#      if @target_point.x == @point.x && @target_point.y == @point.y
-#        @set_point(@target_point)
+      if @target_point.x == @point.x && @target_point.y == @point.y
+        @target_point = null
+        @deactive()
     return
 
   renderTo: (ctx) ->
@@ -369,6 +370,7 @@ class Chess
         if @target_point
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
+          @selected_piece = null
     return
 
   render: ->
@@ -568,6 +570,7 @@ class Chess
           piece.active()
           @selected_piece = piece
           @mark_available_target_points()
+          @target_point = null
           Game.log("selected piece:#{@selected_piece.name}, x,y:#{@selected_piece.point.x},#{@selected_piece.point.y}")
         else
           piece.deactive()

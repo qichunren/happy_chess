@@ -83,6 +83,10 @@
             this.point.y += 1;
           }
         }
+        if (this.target_point.x === this.point.x && this.target_point.y === this.point.y) {
+          this.target_point = null;
+          this.deactive();
+        }
       }
     };
 
@@ -705,6 +709,7 @@
           if (this.target_point) {
             this.selected_piece.move_to_point(this.target_point);
             this.selected_piece.update(dt);
+            this.selected_piece = null;
           }
         }
       }
@@ -954,6 +959,7 @@
               piece.active();
               _this.selected_piece = piece;
               _this.mark_available_target_points();
+              _this.target_point = null;
               Game.log("selected piece:" + _this.selected_piece.name + ", x,y:" + _this.selected_piece.point.x + "," + _this.selected_piece.point.y);
             } else {
               piece.deactive();

@@ -28,8 +28,9 @@ class Piece
       if @target_point.y != @point.y
         @point.y -= 1 if @target_point.y < @point.y
         @point.y += 1 if @target_point.y > @point.y
-#      if @target_point.x == @point.x && @target_point.y == @point.y
-#        @set_point(@target_point)
+      if @target_point.x == @point.x && @target_point.y == @point.y
+        @target_point = null
+        @deactive()
     return
 
   renderTo: (ctx) ->
