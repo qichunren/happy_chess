@@ -55,7 +55,8 @@
     };
 
     Piece.prototype.move_to_point = function(target_point) {
-      return this.target_point = target_point;
+      this.target_point = PiecePoint.clone(target_point);
+      target_point = null;
     };
 
     Piece.prototype.update = function(dt) {
@@ -345,14 +346,14 @@
       target_points = [];
       switch (this.name) {
         case 'car':
-          for (y = _i = 0; _i <= 9; y = ++_i) {
-            if (y !== this.point.y) {
-              target_points.push(new PiecePoint(this.point.x, y));
-            }
-          }
-          for (x = _j = 0; _j <= 8; x = ++_j) {
+          for (x = _i = 0; _i <= 8; x = ++_i) {
             if (x !== this.point.x) {
               target_points.push(new PiecePoint(x, this.point.y));
+            }
+          }
+          for (y = _j = 0; _j <= 9; y = ++_j) {
+            if (y !== this.point.y) {
+              target_points.push(new PiecePoint(this.point.x, y));
             }
           }
       }
@@ -435,6 +436,19 @@
         ctx.strokeStyle = '#FF9900';
         return ctx.stroke();
       }
+    };
+
+    PiecePoint.prototype.is_in = function(points) {
+      var is_include, point, _i, _len;
+      is_include = false;
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        point = points[_i];
+        if (this.is_same(point)) {
+          is_include = true;
+          return is_include;
+        }
+      }
+      return is_include;
     };
 
     PiecePoint.prototype.is_at_top_edge = function() {
@@ -590,7 +604,6 @@
         piece = _ref[_i];
         this.current_points.push(piece.point);
         if (this.selected_piece === piece) {
-          console.log('selected piece: ', piece.point.x, piece.point.y);
           if (this.target_point) {
             this.selected_piece.move_to_point(this.target_point);
             this.selected_piece.update(dt);
@@ -652,17 +665,17 @@
     }
 
     Chess.prototype.is_blank_point = function(point) {
-      var found, _i, _len, _point, _ref;
-      found = false;
-      _ref = this.current_points;
+      var blank, piece, _i, _len, _ref;
+      blank = true;
+      _ref = this.pieces;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        _point = _ref[_i];
-        if (point.is_same(_point)) {
-          found = true;
+        piece = _ref[_i];
+        if (piece.point.is_same(point)) {
+          blank = false;
+          return blank;
         }
-        break;
       }
-      return found === false;
+      return blank;
     };
 
     Chess.prototype.point = function(x, y) {
@@ -854,10 +867,11 @@
               _results1 = [];
               for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
                 point = points_in_columns[_k];
-                point.reset_moveable();
                 if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
                   if (this.is_blank_point(point)) {
+                    Game.log("Point (" + point.x + "," + point.y + ") is blank.");
                     this.target_point = PiecePoint.clone(point);
+                    this.reset_moveable_points();
                     break;
                   } else {
                     _results1.push(void 0);
@@ -874,12 +888,33 @@
       })(this));
     };
 
-    Chess.prototype.mark_available_target_points = function() {
-      var target_point, _i, _len, _ref;
-      _ref = this.selected_piece.moveable_points();
+    Chess.prototype.reset_moveable_points = function() {
+      var point, points_in_columns, _i, _j, _len, _len1, _ref;
+      _ref = this.points;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        target_point = _ref[_i];
-        this.point(target_point.x, target_point.y).mark_moveable();
+        points_in_columns = _ref[_i];
+        for (_j = 0, _len1 = points_in_columns.length; _j < _len1; _j++) {
+          point = points_in_columns[_j];
+          point.reset_moveable();
+        }
+      }
+    };
+
+    Chess.prototype.mark_available_target_points = function() {
+      var moveable_points, point, points_in_columns, _i, _j, _len, _len1, _ref;
+      moveable_points = this.selected_piece.moveable_points();
+      Game.log("moveable points:" + moveable_points.length);
+      _ref = this.points;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        points_in_columns = _ref[_i];
+        for (_j = 0, _len1 = points_in_columns.length; _j < _len1; _j++) {
+          point = points_in_columns[_j];
+          if (point.is_in(moveable_points)) {
+            point.mark_moveable();
+          } else {
+            point.reset_moveable();
+          }
+        }
       }
     };
 

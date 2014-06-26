@@ -27,6 +27,7 @@ class PiecePoint
 
   mark_moveable: ->
     @moveable = true
+
   reset_moveable: ->
     @moveable = false
 
@@ -43,6 +44,14 @@ class PiecePoint
       ctx.lineWidth = 5
       ctx.strokeStyle = '#FF9900'
       ctx.stroke()
+
+  is_in: (points) ->
+    is_include = false
+    for point in points
+      if @is_same(point)
+        is_include = true
+        return is_include
+    is_include
 
   is_at_top_edge: ->
     @y == 9

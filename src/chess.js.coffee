@@ -14,7 +14,6 @@ class Chess
     for piece in @pieces
       @current_points.push(piece.point)
       if @selected_piece == piece
-        console.log('selected piece: ', piece.point.x, piece.point.y)
         if @target_point
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
@@ -66,12 +65,12 @@ class Chess
     Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
-    found = false
-    for _point in @current_points
-      found = true if point.is_same(_point)
-      break
-
-    return found == false
+    blank = true
+    for piece in @pieces
+      if piece.point.is_same(point)
+        blank = false
+        return blank
+    blank
 
   point:(x, y) ->
     @points[x][y]
@@ -222,16 +221,29 @@ class Chess
 
       for points_in_columns in @points
         for point in points_in_columns
-          point.reset_moveable()
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
+              Game.log("Point (#{point.x},#{point.y}) is blank.")
               @target_point = PiecePoint.clone(point)
+              @reset_moveable_points()
               break
     return
 
+  reset_moveable_points: ->
+    for points_in_columns in @points
+      for point in points_in_columns
+        point.reset_moveable()
+    return
+
   mark_available_target_points: ->
-    for target_point in @selected_piece.moveable_points()
-      @point(target_point.x, target_point.y).mark_moveable()
+    moveable_points = @selected_piece.moveable_points()
+    Game.log("moveable points:#{moveable_points.length}")
+    for points_in_columns in @points
+      for point in points_in_columns
+        if point.is_in(moveable_points)
+          point.mark_moveable()
+        else
+          point.reset_moveable()
     return
 
 $ ->

@@ -17,7 +17,9 @@ class Piece
     @point = point
 
   move_to_point: (target_point) ->
-    @target_point = target_point
+    @target_point = PiecePoint.clone(target_point)
+    target_point = null
+    return
 
   update: (dt) ->
     if @target_point
@@ -109,10 +111,10 @@ class Piece
     target_points = []
     switch @name
       when 'car'
-        for y in [0..9]
-          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
         for x in [0..8]
           target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+        for y in [0..9]
+          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
     target_points
 
   active: ->

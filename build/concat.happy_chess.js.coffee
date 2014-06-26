@@ -37,7 +37,9 @@ class Piece
     @point = point
 
   move_to_point: (target_point) ->
-    @target_point = target_point
+    @target_point = PiecePoint.clone(target_point)
+    target_point = null
+    return
 
   update: (dt) ->
     if @target_point
@@ -129,10 +131,10 @@ class Piece
     target_points = []
     switch @name
       when 'car'
-        for y in [0..9]
-          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
         for x in [0..8]
           target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+        for y in [0..9]
+          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
     target_points
 
   active: ->
@@ -178,6 +180,7 @@ class PiecePoint
 
   mark_moveable: ->
     @moveable = true
+
   reset_moveable: ->
     @moveable = false
 
@@ -194,6 +197,14 @@ class PiecePoint
       ctx.lineWidth = 5
       ctx.strokeStyle = '#FF9900'
       ctx.stroke()
+
+  is_in: (points) ->
+    is_include = false
+    for point in points
+      if @is_same(point)
+        is_include = true
+        return is_include
+    is_include
 
   is_at_top_edge: ->
     @y == 9
@@ -306,7 +317,6 @@ class Chess
     for piece in @pieces
       @current_points.push(piece.point)
       if @selected_piece == piece
-        console.log('selected piece: ', piece.point.x, piece.point.y)
         if @target_point
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
@@ -358,12 +368,12 @@ class Chess
     Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
-    found = false
-    for _point in @current_points
-      found = true if point.is_same(_point)
-      break
-
-    return found == false
+    blank = true
+    for piece in @pieces
+      if piece.point.is_same(point)
+        blank = false
+        return blank
+    blank
 
   point:(x, y) ->
     @points[x][y]
@@ -514,16 +524,29 @@ class Chess
 
       for points_in_columns in @points
         for point in points_in_columns
-          point.reset_moveable()
           if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
             if @is_blank_point(point)
+              Game.log("Point (#{point.x},#{point.y}) is blank.")
               @target_point = PiecePoint.clone(point)
+              @reset_moveable_points()
               break
     return
 
+  reset_moveable_points: ->
+    for points_in_columns in @points
+      for point in points_in_columns
+        point.reset_moveable()
+    return
+
   mark_available_target_points: ->
-    for target_point in @selected_piece.moveable_points()
-      @point(target_point.x, target_point.y).mark_moveable()
+    moveable_points = @selected_piece.moveable_points()
+    Game.log("moveable points:#{moveable_points.length}")
+    for points_in_columns in @points
+      for point in points_in_columns
+        if point.is_in(moveable_points)
+          point.mark_moveable()
+        else
+          point.reset_moveable()
     return
 
 $ ->
