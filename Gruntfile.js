@@ -32,7 +32,7 @@ module.exports = function(grunt) {
         },
         watch: {
             files: ['<%= concat.dist.src %>'],
-            tasks: ['concat', 'coffee','uglify']
+            tasks: ['concat', 'coffee']
         }
 
     });
