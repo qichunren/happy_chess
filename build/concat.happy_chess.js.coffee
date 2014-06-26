@@ -135,17 +135,19 @@ class Piece
         for y in [0..9]
           target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
       when 'horse' # max to 8 points
-        target_points.push(new PiecePoint(@point.x+1, @point.y+2)) if @point.x+1 <= 8 || @point.y+2 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y+1)) if @point.x+2 <= 8 || @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y-1)) if @point.x+2 <= 8 || @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x+1, @point.y-2)) if @point.x+1 <= 8 || @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-1, @point.y-2)) if @point.x-1 >= 0 || @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y-1)) if @point.x-2 >= 0 || @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y+1)) if @point.x-2 >= 0 || @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x-1, @point.y+2)) if @point.x-1 >= 0 || @point.y+2 <= 9
-      when 'elephant'
-        # todo
-        []
+        target_points.push(new PiecePoint(@point.x+1, @point.y+2)) if @point.x+1 <= 8 && @point.y+2 <= 9
+        target_points.push(new PiecePoint(@point.x+2, @point.y+1)) if @point.x+2 <= 8 && @point.y+1 <= 9
+        target_points.push(new PiecePoint(@point.x+2, @point.y-1)) if @point.x+2 <= 8 && @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x+1, @point.y-2)) if @point.x+1 <= 8 && @point.y-2 >= 0
+        target_points.push(new PiecePoint(@point.x-1, @point.y-2)) if @point.x-1 >= 0 && @point.y-2 >= 0
+        target_points.push(new PiecePoint(@point.x-2, @point.y-1)) if @point.x-2 >= 0 && @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x-2, @point.y+1)) if @point.x-2 >= 0 && @point.y+1 <= 9
+        target_points.push(new PiecePoint(@point.x-1, @point.y+2)) if @point.x-1 >= 0 && @point.y+2 <= 9
+      when 'elephant' # max to 4 points
+        target_points.push(new PiecePoint(@point.x-2, @point.y-2)) if @point.x-2 >= 0 && @point.y-2 >= 0
+        target_points.push(new PiecePoint(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
+        target_points.push(new PiecePoint(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
+        target_points.push(new PiecePoint(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
       when 'knight'
         # todo
         []

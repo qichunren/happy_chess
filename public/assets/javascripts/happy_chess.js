@@ -358,33 +358,44 @@
           }
           break;
         case 'horse':
-          if (this.point.x + 1 <= 8 || this.point.y + 2 <= 9) {
+          if (this.point.x + 1 <= 8 && this.point.y + 2 <= 9) {
             target_points.push(new PiecePoint(this.point.x + 1, this.point.y + 2));
           }
-          if (this.point.x + 2 <= 8 || this.point.y + 1 <= 9) {
+          if (this.point.x + 2 <= 8 && this.point.y + 1 <= 9) {
             target_points.push(new PiecePoint(this.point.x + 2, this.point.y + 1));
           }
-          if (this.point.x + 2 <= 8 || this.point.y - 1 >= 0) {
+          if (this.point.x + 2 <= 8 && this.point.y - 1 >= 0) {
             target_points.push(new PiecePoint(this.point.x + 2, this.point.y - 1));
           }
-          if (this.point.x + 1 <= 8 || this.point.y - 2 >= 0) {
+          if (this.point.x + 1 <= 8 && this.point.y - 2 >= 0) {
             target_points.push(new PiecePoint(this.point.x + 1, this.point.y - 2));
           }
-          if (this.point.x - 1 >= 0 || this.point.y - 2 >= 0) {
+          if (this.point.x - 1 >= 0 && this.point.y - 2 >= 0) {
             target_points.push(new PiecePoint(this.point.x - 1, this.point.y - 2));
           }
-          if (this.point.x - 2 >= 0 || this.point.y - 1 >= 0) {
+          if (this.point.x - 2 >= 0 && this.point.y - 1 >= 0) {
             target_points.push(new PiecePoint(this.point.x - 2, this.point.y - 1));
           }
-          if (this.point.x - 2 >= 0 || this.point.y + 1 <= 9) {
+          if (this.point.x - 2 >= 0 && this.point.y + 1 <= 9) {
             target_points.push(new PiecePoint(this.point.x - 2, this.point.y + 1));
           }
-          if (this.point.x - 1 >= 0 || this.point.y + 2 <= 9) {
+          if (this.point.x - 1 >= 0 && this.point.y + 2 <= 9) {
             target_points.push(new PiecePoint(this.point.x - 1, this.point.y + 2));
           }
           break;
         case 'elephant':
-          [];
+          if (this.point.x - 2 >= 0 && this.point.y - 2 >= 0) {
+            target_points.push(new PiecePoint(this.point.x - 2, this.point.y - 2));
+          }
+          if (this.point.x - 2 >= 0 && this.point.y + 2 <= 4) {
+            target_points.push(new PiecePoint(this.point.x - 2, this.point.y + 2));
+          }
+          if (this.point.x + 2 <= 8 && this.point.y + 2 <= 4) {
+            target_points.push(new PiecePoint(this.point.x + 2, this.point.y + 2));
+          }
+          if (this.point.x + 2 <= 8 && this.point.y - 2 >= 0) {
+            target_points.push(new PiecePoint(this.point.x + 2, this.point.y - 2));
+          }
           break;
         case 'knight':
           [];
