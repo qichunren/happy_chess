@@ -1004,12 +1004,8 @@
               for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
                 point = points_in_columns[_k];
                 if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
-                  if (this.is_blank_point(point)) {
-                    this.select_point(point);
-                    break;
-                  } else {
-                    _results1.push(void 0);
-                  }
+                  this.select_point(point);
+                  break;
                 } else {
                   _results1.push(void 0);
                 }
@@ -1063,21 +1059,43 @@
       }
     };
 
+    Chess.prototype.cancel_select_piece = function() {
+      var piece, _i, _len, _ref, _results;
+      if (this.selected_piece) {
+        this.selected_piece = null;
+        _ref = this.current_player.alive_pieces();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          piece = _ref[_i];
+          _results.push(piece.is_selected = false);
+        }
+        return _results;
+      }
+    };
+
     Chess.prototype.select_point = function(point) {
-      var point2, points_in_columns, _i, _j, _len, _len1, _ref;
-      point.is_selected = true;
-      this.selected_point = point;
-      _ref = this.points;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        points_in_columns = _ref[_i];
-        for (_j = 0, _len1 = points_in_columns.length; _j < _len1; _j++) {
-          point2 = points_in_columns[_j];
-          if (point2 !== point) {
-            point2.is_selected = false;
+      var moveable_points, point2, points_in_columns, _i, _j, _len, _len1, _ref;
+      if (this.is_blank_point(point)) {
+        if (this.selected_piece) {
+          moveable_points = this.selected_piece.moveable_points();
+          if (!point.is_in(moveable_points)) {
+            this.cancel_select_piece();
           }
         }
+        point.is_selected = true;
+        this.selected_point = point;
+        _ref = this.points;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          points_in_columns = _ref[_i];
+          for (_j = 0, _len1 = points_in_columns.length; _j < _len1; _j++) {
+            point2 = points_in_columns[_j];
+            if (point2 !== point) {
+              point2.is_selected = false;
+            }
+          }
+        }
+        this.reset_moveable_points();
       }
-      this.reset_moveable_points();
     };
 
     return Chess;
