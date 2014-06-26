@@ -25,7 +25,6 @@ class Piece
   constructor: (name_symbol, color) ->
     @name_symbol = name_symbol
     @name = if @name_symbol.indexOf('_') > -1 then @name_symbol.split('_')[0] else @name_symbol
-
     @is_alive = true
     @is_selected = false
     @is_hover = false
@@ -103,9 +102,9 @@ class Piece
       when 'horse_r'
         if @color == 'red' then {x: 7, y: 0} else Piece.reverse_point({x: 7, y: 0})
       when 'elephant_l'
-        if @color == 'red' then  {x: 2, y: 0} else Piece.reverse_point({x: 2, y: 0})
+        if @color == 'red' then {x: 2, y: 0} else Piece.reverse_point({x: 2, y: 0})
       when 'elephant_r'
-        if @color == 'red' then   {x: 6, y: 0} else Piece.reverse_point({x: 6, y: 0})
+        if @color == 'red' then {x: 6, y: 0} else Piece.reverse_point({x: 6, y: 0})
       when 'knight_l'
         if @color == 'red' then {x: 3, y: 0} else Piece.reverse_point({x: 3, y: 0})
       when 'knight_r'
@@ -121,9 +120,9 @@ class Piece
       when 'soldier_2'
         if @color == 'red' then {x: 2, y: 3} else Piece.reverse_point({x: 2, y: 3})
       when 'soldier_3'
-        if @color == 'red' then  {x: 4, y: 3} else Piece.reverse_point({x: 4, y: 3})
+        if @color == 'red' then {x: 4, y: 3} else Piece.reverse_point({x: 4, y: 3})
       when 'soldier_4'
-        if @color == 'red' then  {x: 6, y: 3} else Piece.reverse_point({x: 6, y: 3})
+        if @color == 'red' then {x: 6, y: 3} else Piece.reverse_point({x: 6, y: 3})
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
@@ -135,8 +134,30 @@ class Piece
           target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
         for y in [0..9]
           target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
-
-
+      when 'horse' # max to 8 points
+        target_points.push(new PiecePoint(@point.x+1, @point.y+2)) if @point.x+1 <= 8 || @point.y+2 <= 9
+        target_points.push(new PiecePoint(@point.x+2, @point.y+1)) if @point.x+2 <= 8 || @point.y+1 <= 9
+        target_points.push(new PiecePoint(@point.x+2, @point.y-1)) if @point.x+2 <= 8 || @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x+1, @point.y-2)) if @point.x+1 <= 8 || @point.y-2 >= 0
+        target_points.push(new PiecePoint(@point.x-1, @point.y-2)) if @point.x-1 >= 0 || @point.y-2 >= 0
+        target_points.push(new PiecePoint(@point.x-2, @point.y-1)) if @point.x-2 >= 0 || @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x-2, @point.y+1)) if @point.x-2 >= 0 || @point.y+1 <= 9
+        target_points.push(new PiecePoint(@point.x-1, @point.y+2)) if @point.x-1 >= 0 || @point.y+2 <= 9
+      when 'elephant'
+        # todo
+        []
+      when 'knight'
+        # todo
+        []
+      when 'chief'
+        # todo
+        []
+      when 'gun'
+        # todo
+        []
+      when 'soldier'
+        # todo
+        []
     target_points
 
   active: ->
@@ -242,8 +263,8 @@ class Player
     else if @color == 'black'
       @name = "黑方#{name}"
     @pieces = {
-      car_l      : null,
-      car_r      : null,
+      carriage_l : null,
+      carriage_r : null,
       horse_l    : null,
       horse_r    : null,
       elephant_l : null,
@@ -279,8 +300,8 @@ class Player
       return @piece_array_alive
 
   spawn_pieces: ->
-    @pieces.car_l      = new Piece('car_l', @color)
-    @pieces.car_r      = new Piece('car_r', @color)
+    @pieces.carriage_l = new Piece('carriage_l', @color)
+    @pieces.carriage_r = new Piece('carriage_r', @color)
     @pieces.horse_l    = new Piece('horse_l', @color)
     @pieces.horse_r    = new Piece('horse_r', @color)
     @pieces.elephant_l = new Piece('elephant_l', @color)

@@ -356,6 +356,47 @@
               target_points.push(new PiecePoint(this.point.x, y));
             }
           }
+          break;
+        case 'horse':
+          if (this.point.x + 1 <= 8 || this.point.y + 2 <= 9) {
+            target_points.push(new PiecePoint(this.point.x + 1, this.point.y + 2));
+          }
+          if (this.point.x + 2 <= 8 || this.point.y + 1 <= 9) {
+            target_points.push(new PiecePoint(this.point.x + 2, this.point.y + 1));
+          }
+          if (this.point.x + 2 <= 8 || this.point.y - 1 >= 0) {
+            target_points.push(new PiecePoint(this.point.x + 2, this.point.y - 1));
+          }
+          if (this.point.x + 1 <= 8 || this.point.y - 2 >= 0) {
+            target_points.push(new PiecePoint(this.point.x + 1, this.point.y - 2));
+          }
+          if (this.point.x - 1 >= 0 || this.point.y - 2 >= 0) {
+            target_points.push(new PiecePoint(this.point.x - 1, this.point.y - 2));
+          }
+          if (this.point.x - 2 >= 0 || this.point.y - 1 >= 0) {
+            target_points.push(new PiecePoint(this.point.x - 2, this.point.y - 1));
+          }
+          if (this.point.x - 2 >= 0 || this.point.y + 1 <= 9) {
+            target_points.push(new PiecePoint(this.point.x - 2, this.point.y + 1));
+          }
+          if (this.point.x - 1 >= 0 || this.point.y + 2 <= 9) {
+            target_points.push(new PiecePoint(this.point.x - 1, this.point.y + 2));
+          }
+          break;
+        case 'elephant':
+          [];
+          break;
+        case 'knight':
+          [];
+          break;
+        case 'chief':
+          [];
+          break;
+        case 'gun':
+          [];
+          break;
+        case 'soldier':
+          [];
       }
       return target_points;
     };
@@ -505,8 +546,8 @@
         this.name = "黑方" + name;
       }
       this.pieces = {
-        car_l: null,
-        car_r: null,
+        carriage_l: null,
+        carriage_r: null,
         horse_l: null,
         horse_r: null,
         elephant_l: null,
@@ -560,8 +601,8 @@
     };
 
     Player.prototype.spawn_pieces = function() {
-      this.pieces.car_l = new Piece('car_l', this.color);
-      this.pieces.car_r = new Piece('car_r', this.color);
+      this.pieces.carriage_l = new Piece('carriage_l', this.color);
+      this.pieces.carriage_r = new Piece('carriage_r', this.color);
       this.pieces.horse_l = new Piece('horse_l', this.color);
       this.pieces.horse_r = new Piece('horse_r', this.color);
       this.pieces.elephant_l = new Piece('elephant_l', this.color);
