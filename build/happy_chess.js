@@ -755,7 +755,7 @@
     Chess.prototype.setupEventListener = function() {
       this.canvas_element.addEventListener('mousemove', (function(_this) {
         return function(event) {
-          var every_point, piece, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
+          var piece, point, points_in_columns, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
           x = event.pageX - _this.canvasElemLeft;
           y = event.pageY - _this.canvasElemTop;
           _ref = _this.pieces;
@@ -770,23 +770,31 @@
           _ref1 = _this.points;
           _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            every_point = _ref1[_j];
-            if (x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius) {
-              if (_this.is_blank_point(every_point)) {
-                _results.push(every_point.hover());
-              } else {
-                _results.push(void 0);
+            points_in_columns = _ref1[_j];
+            _results.push((function() {
+              var _k, _len2, _results1;
+              _results1 = [];
+              for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
+                point = points_in_columns[_k];
+                if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
+                  if (this.is_blank_point(point)) {
+                    _results1.push(point.hover());
+                  } else {
+                    _results1.push(void 0);
+                  }
+                } else {
+                  _results1.push(point.hout());
+                }
               }
-            } else {
-              _results.push(every_point.hout());
-            }
+              return _results1;
+            }).call(_this));
           }
           return _results;
         };
       })(this));
       return this.canvas_element.addEventListener('click', (function(_this) {
         return function(event) {
-          var every_point, piece, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
+          var piece, point, points_in_columns, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
           x = event.pageX - _this.canvasElemLeft;
           y = event.pageY - _this.canvasElemTop;
           console.log('receive click event on canvas: ', x, y);
@@ -803,17 +811,25 @@
           _ref1 = _this.points;
           _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            every_point = _ref1[_j];
-            if (x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius) {
-              if (_this.is_blank_point(every_point)) {
-                _this.target_point = every_point;
-                break;
-              } else {
-                _results.push(void 0);
+            points_in_columns = _ref1[_j];
+            _results.push((function() {
+              var _k, _len2, _results1;
+              _results1 = [];
+              for (_k = 0, _len2 = points_in_columns.length; _k < _len2; _k++) {
+                point = points_in_columns[_k];
+                if (x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius) {
+                  if (this.is_blank_point(point)) {
+                    this.target_point = point;
+                    break;
+                  } else {
+                    _results1.push(void 0);
+                  }
+                } else {
+                  _results1.push(void 0);
+                }
               }
-            } else {
-              _results.push(void 0);
-            }
+              return _results1;
+            }).call(_this));
           }
           return _results;
         };

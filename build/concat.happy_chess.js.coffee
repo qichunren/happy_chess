@@ -455,12 +455,13 @@ class Chess
         else
           piece.hout()
 
-      for every_point in @points
-        if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
-          if @is_blank_point(every_point)
-            every_point.hover()
-        else
-          every_point.hout()
+      for points_in_columns in @points
+        for point in points_in_columns
+          if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
+            if @is_blank_point(point)
+              point.hover()
+          else
+            point.hout()
 
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
@@ -473,11 +474,12 @@ class Chess
         else
           piece.deactive()
 
-      for every_point in @points
-        if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
-          if @is_blank_point(every_point)
-            @target_point = every_point
-            break
+      for points_in_columns in @points
+        for point in points_in_columns
+          if x >= point.x_in_world() - Game.radius && x <= point.x_in_world() + Game.radius && y >= point.y_in_world() - Game.radius && y <= point.y_in_world() + Game.radius
+            if @is_blank_point(point)
+              @target_point = point
+              break
 
 $ ->
   chess_game = new Chess()
