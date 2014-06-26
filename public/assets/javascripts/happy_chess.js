@@ -431,7 +431,19 @@
           [];
           break;
         case 'soldier':
-          [];
+          if (this.point.y <= 4) {
+            target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
+          } else {
+            if (this.point.x - 1 >= 0) {
+              target_points.push(new PiecePoint(this.point.x - 1, this.point.y));
+            }
+            if (this.point.x + 1 <= 8) {
+              target_points.push(new PiecePoint(this.point.x + 1, this.point.y));
+            }
+            if (this.point.y + 1 <= 9) {
+              target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
+            }
+          }
       }
       return target_points;
     };

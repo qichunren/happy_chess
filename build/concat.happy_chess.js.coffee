@@ -170,9 +170,13 @@ class Piece
       when 'gun'
         # todo
         []
-      when 'soldier'
-        # todo
-        []
+      when 'soldier' # only one move step when not cross river. After cross river, max move points to 3
+        if @point.y <= 4
+          target_points.push(new PiecePoint(@point.x, @point.y+1))
+        else
+          target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 0
+          target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 8
+          target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 9
     target_points
 
   active: ->
