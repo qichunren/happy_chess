@@ -1,57 +1,3 @@
-class PiecePoint
-
-  constructor: (x, y) ->
-    @x = x
-    @y = y
-    @is_hover = false
-
-  x_in_world: ->
-    @x * Game.piece_padding + Game.margin_left
-
-  y_in_world: ->
-    ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top
-
-  is_same: (other) ->
-    @x == other.x && @y == other.y
-
-  hover: ->
-    @is_hover = true
-
-  hout: ->
-    @is_hover = false
-
-  renderTo:(ctx) ->
-    if @is_hover
-      ctx.beginPath()
-      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 5
-      ctx.strokeStyle = '#003300'
-      ctx.stroke()
-
-  is_at_top_edge: ->
-    @y == 9
-
-  is_at_bottom: ->
-    @y == 0
-
-  is_at_left_edge: ->
-    @x == 0
-
-  is_at_right_edge: ->
-    @x == (Game.columns - 1)
-
-  is_at_self_river: ->
-    @y == 4
-
-  is_at_enmy_river: ->
-    @y == 5
-
-  toPosition: ->
-    {x : @x * Game.piece_padding, y : ((Game.rows-1) - @y) * Game.piece_padding  }
-
-  toPositionInWorld: ->
-    {x : @x * Game.piece_padding + Game.margin_left, y : ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top }
-
 class Chess
 
   main: =>
@@ -72,17 +18,20 @@ class Chess
         if @target_point
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
+    return
 
   render: ->
     @ctx.fillStyle = '#FFF';
     @ctx.fillRect(0, 0, @ctx_width, @ctx_height)
     @drawMap()
 
-    for point in @all_points
-      point.renderTo(@ctx)
+    for points_in_columns in @points
+      for point in points_in_columns
+        point.renderTo(@ctx)
 
     for piece in @pieces
       piece.renderTo(@ctx)
+    return
 
   constructor: (canvas_id = 'chess_game') ->
     @lastTime = Date.now()
@@ -103,11 +52,15 @@ class Chess
     @panel_width = (@columns - 1) * @piece_margin
     @panel_height = (@rows - 1) * @piece_margin
 
-    @all_points = []
+    @points = []
+    @pieces = []
+    @player_red = null
+    @player_black = null
+    @current_player = null # current player is at bottom, enmy player is at top.
     @current_points = []
     @selected_piece = null
     @target_point
-    Game.log("panel width, height: ", @panel_width, @panel_height)
+    Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
     found = false
@@ -118,22 +71,19 @@ class Chess
     return found == false
 
   point:(x, y) ->
-    point = null
-    for _point in @all_points
-        if _point.x == x && _point.y == y
-          point = _point
-          break
-    point
+    @points[x][y]
 
   fill_points: ->
     column_array = [0..(@columns-1)]
     row_array = [0..(@rows-1)]
     for y in row_array
       for x in column_array
-        @all_points.push(new PiecePoint(x, y))
+        @points[x] ||= []
+        @points[x].push(new PiecePoint(x, y))
 
   init: ->
     @fill_points()
+    @setupPlayers()
     @setupPieces()
     @setupEventListener()
     @main()
@@ -221,12 +171,16 @@ class Chess
     @ctx.lineTo(s44_point.x_in_world(), s44_point.y_in_world())
     @ctx.stroke()
 
+  setupPlayers: ->
+    @player_red = new Player('red')
+    @player_black = new Player('black')
+    @current_player = @player_red
+
   setupPieces: ->
-    @pieces = []
-    for name in ['car_l', 'car_r', 'horse_l', 'horse_r', 'elephant_l', 'elephant_r', 'knight_l', 'knight_r', 'chief', 'gun_l', 'gun_r', 'soldier_1', 'soldier_2', 'soldier_3', 'soldier_4', 'soldier_5']
-      piece = new Piece(name, 'red')
-      @pieces.push(piece)
-      @current_points.push(piece.point)
+    @pieces.push.apply(@pieces, @player_red.spawn_pieces())
+    @pieces.push.apply(@pieces, @player_black.spawn_pieces())
+    Game.log("Piece count: #{@pieces.length}")
+    return
 
   setupEventListener: ->
     @canvas_element.addEventListener 'mousemove', (event) =>
@@ -238,7 +192,7 @@ class Chess
         else
           piece.hout()
 
-      for every_point in @all_points
+      for every_point in @points
         if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             every_point.hover()
@@ -256,7 +210,7 @@ class Chess
         else
           piece.deactive()
 
-      for every_point in @all_points
+      for every_point in @points
         if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             @target_point = every_point

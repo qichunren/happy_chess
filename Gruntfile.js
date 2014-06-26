@@ -9,14 +9,15 @@ module.exports = function(grunt) {
                 separator: "\n\n#### Another file ####\n\n"
             },
             dist: {
-                src: ['src/game.js.coffee', 'src/piece.js.coffee', 'src/chess.js.coffee'],
+                src: ['src/game.js.coffee', 'src/piece.js.coffee', 'src/piece_point.js.coffee', 'src/player.js.coffee', 'src/chess.js.coffee'],
                 dest: 'build/concat.<%= pkg.name %>.js.coffee'
             }
         },
         coffee: {
             compile: {
                 files: {
-                    'build/<%= pkg.name %>.js':  '<%= concat.dist.dest %>'
+                    'build/<%= pkg.name %>.js':  '<%= concat.dist.dest %>',
+                    'public/assets/javascripts/<%= pkg.name %>.js':  '<%= concat.dist.dest %>'
                 }
             }
         },

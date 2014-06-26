@@ -19,16 +19,21 @@ Game.log = (message) ->
 #### Another file ####
 
 class Piece
+  @reverse_point: (p) ->
+    { x: ( 8 - p.x ), y: ( 9 - p.y ) }
+
   constructor: (name_symbol, color) ->
     @name_symbol = name_symbol
+    @name = if @name_symbol.indexOf('_') > -1 then @name_symbol.split('_')[0] else @name_symbol
+
+    @is_alive = true
     @is_selected = false
     @is_hover = false
-    @name = if @name_symbol.indexOf('_') > -1 then @name_symbol.split('_')[0] else @name_symbol
     @color = color
     @point = new PiecePoint(@start_point().x, @start_point().y)
     @target_point = null
 
-  set_point:(point) ->
+  set_point: (point) ->
     @point = point
 
   move_to_point: (target_point) ->
@@ -45,9 +50,7 @@ class Piece
       if @target_point.x == @point.x && @target_point.y == @point.y
         @set_point(@target_point)
 
-
-
-  renderTo:(ctx) ->
+  renderTo: (ctx) ->
     ctx.beginPath()
     ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius, 0, 2 * Math.PI, false)
     ctx.fillStyle = @color
@@ -65,7 +68,7 @@ class Piece
     ctx.font = '20pt Calibri'
     ctx.fillStyle = '#FFF'
     ctx.textAlign = 'center'
-    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world()+10)
+    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
 
   label: ->
     l = null
@@ -87,23 +90,39 @@ class Piece
 
   start_point: ->
     switch @name_symbol
-      when 'car_l'      then {x:0,y:0}
-      when 'car_r'      then {x:8,y:0}
-      when 'horse_l'    then {x:1,y:0}
-      when 'horse_r'    then {x:7,y:0}
-      when 'elephant_l' then {x:2,y:0}
-      when 'elephant_r' then {x:6,y:0}
-      when 'knight_l'   then {x:3,y:0}
-      when 'knight_r'   then {x:5,y:0}
-      when 'chief'      then {x:4,y:0}
-      when 'gun_l'      then {x:1,y:2}
-      when 'gun_r'      then {x:7,y:2}
-      when 'soldier_1'  then {x:0,y:3}
-      when 'soldier_2'  then {x:2,y:3}
-      when 'soldier_3'  then {x:4,y:3}
-      when 'soldier_4'  then {x:6,y:3}
-      when 'soldier_5'  then {x:8,y:3}
-      when 'soldier_6'  then {x:9,y:3}
+      when 'car_l'
+        if @color == 'red' then {x: 0, y: 0} else Piece.reverse_point({x: 0, y: 0})
+      when 'car_r'
+        if @color == 'red' then {x: 8, y: 0} else Piece.reverse_point({x: 8, y: 0})
+      when 'horse_l'
+        if @color == 'red' then {x: 1, y: 0} else Piece.reverse_point({x: 1, y: 0})
+      when 'horse_r'
+        if @color == 'red' then {x: 7, y: 0} else Piece.reverse_point({x: 7, y: 0})
+      when 'elephant_l'
+        if @color == 'red' then  {x: 2, y: 0} else Piece.reverse_point({x: 2, y: 0})
+      when 'elephant_r'
+        if @color == 'red' then   {x: 6, y: 0} else Piece.reverse_point({x: 6, y: 0})
+      when 'knight_l'
+        if @color == 'red' then {x: 3, y: 0} else Piece.reverse_point({x: 3, y: 0})
+      when 'knight_r'
+        if @color == 'red' then {x: 5, y: 0} else Piece.reverse_point({x: 5, y: 0})
+      when 'chief'
+        if @color == 'red' then {x: 4, y: 0} else Piece.reverse_point({x: 4, y: 0})
+      when 'gun_l'
+        if @color == 'red' then {x: 1, y: 2} else Piece.reverse_point({x: 1, y: 2})
+      when 'gun_r'
+        if @color == 'red' then {x: 7, y: 2} else Piece.reverse_point({x: 7, y: 2})
+      when 'soldier_1'
+        if @color == 'red' then {x: 0, y: 3} else Piece.reverse_point({x: 0, y: 3})
+      when 'soldier_2'
+        if @color == 'red' then {x: 2, y: 3} else Piece.reverse_point({x: 2, y: 3})
+      when 'soldier_3'
+        if @color == 'red' then  {x: 4, y: 3} else Piece.reverse_point({x: 4, y: 3})
+      when 'soldier_4'
+        if @color == 'red' then  {x: 6, y: 3} else Piece.reverse_point({x: 6, y: 3})
+      when 'soldier_5'
+        if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
+
 
   active: ->
     @is_selected = true
@@ -125,6 +144,7 @@ class PiecePoint
     @x = x
     @y = y
     @is_hover = false
+    @state = null # null means blank, it may be point to a red/blank piece.
 
   x_in_world: ->
     @x * Game.piece_padding + Game.margin_left
@@ -173,6 +193,74 @@ class PiecePoint
   toPositionInWorld: ->
     {x : @x * Game.piece_padding + Game.margin_left, y : ((Game.rows-1) - @y) * Game.piece_padding + Game.margin_top }
 
+#### Another file ####
+
+class Player
+  constructor: (color, name='') ->
+    @color = color # red or black
+    if @color == 'red'
+      @name = "红方#{name}"
+    else if @color == 'black'
+      @name = "黑方#{name}"
+    @pieces = {
+      car_l      : null,
+      car_r      : null,
+      horse_l    : null,
+      horse_r    : null,
+      elephant_l : null,
+      elephant_r : null,
+      knight_l   : null,
+      knight_r   : null,
+      chief      : null,
+      gun_l      : null,
+      gun_r      : null,
+      soldier_1  : null,
+      soldier_2  : null,
+      soldier_3  : null,
+      soldier_4  : null,
+      soldier_5  : null
+    }
+
+  # piece_array() return all pieces
+  # piece_array(false) return all alive pieces
+  pieces_array: (ignore_alive = true)->
+    if ignore_alive
+      return @piece_array_ignore_alive if @piece_array_ignore_alive
+      @piece_array_ignore_alive = []
+      for own attr, piece of @pieces
+        @piece_array_ignore_alive.push piece
+      return @piece_array_ignore_alive
+    else
+      @piece_array_alive = []
+      for own attr, piece of @pieces
+        @piece_array_alive.push(piece) if piece.is_alive
+      return @piece_array_alive
+
+  spawn_pieces: ->
+    @pieces.car_l      = new Piece('car_l', @color)
+    @pieces.car_r      = new Piece('car_r', @color)
+    @pieces.horse_l    = new Piece('horse_l', @color)
+    @pieces.horse_r    = new Piece('horse_r', @color)
+    @pieces.elephant_l = new Piece('elephant_l', @color)
+    @pieces.elephant_r = new Piece('elephant_r', @color)
+    @pieces.knight_l   = new Piece('knight_l', @color)
+    @pieces.knight_r   = new Piece('knight_r', @color)
+    @pieces.chief      = new Piece('chief', @color)
+    @pieces.gun_l      = new Piece('gun_l', @color)
+    @pieces.gun_r      = new Piece('gun_r', @color)
+    @pieces.soldier_1  = new Piece('soldier_1', @color)
+    @pieces.soldier_2  = new Piece('soldier_2', @color)
+    @pieces.soldier_3  = new Piece('soldier_3', @color)
+    @pieces.soldier_4  = new Piece('soldier_4', @color)
+    @pieces.soldier_5  = new Piece('soldier_5', @color)
+    return @pieces_array()
+
+window.Player = Player
+
+
+
+#### Another file ####
+
 class Chess
 
   main: =>
@@ -193,17 +281,20 @@ class Chess
         if @target_point
           @selected_piece.move_to_point(@target_point)
           @selected_piece.update(dt)
+    return
 
   render: ->
     @ctx.fillStyle = '#FFF';
     @ctx.fillRect(0, 0, @ctx_width, @ctx_height)
     @drawMap()
 
-    for point in @all_points
-      point.renderTo(@ctx)
+    for points_in_columns in @points
+      for point in points_in_columns
+        point.renderTo(@ctx)
 
     for piece in @pieces
       piece.renderTo(@ctx)
+    return
 
   constructor: (canvas_id = 'chess_game') ->
     @lastTime = Date.now()
@@ -224,11 +315,15 @@ class Chess
     @panel_width = (@columns - 1) * @piece_margin
     @panel_height = (@rows - 1) * @piece_margin
 
-    @all_points = []
+    @points = []
+    @pieces = []
+    @player_red = null
+    @player_black = null
+    @current_player = null # current player is at bottom, enmy player is at top.
     @current_points = []
     @selected_piece = null
     @target_point
-    Game.log("panel width, height: ", @panel_width, @panel_height)
+    Game.log("panel width: #{@panel_width}, height: #{@panel_height}")
 
   is_blank_point: (point) ->
     found = false
@@ -239,22 +334,19 @@ class Chess
     return found == false
 
   point:(x, y) ->
-    point = null
-    for _point in @all_points
-        if _point.x == x && _point.y == y
-          point = _point
-          break
-    point
+    @points[x][y]
 
   fill_points: ->
     column_array = [0..(@columns-1)]
     row_array = [0..(@rows-1)]
     for y in row_array
       for x in column_array
-        @all_points.push(new PiecePoint(x, y))
+        @points[x] ||= []
+        @points[x].push(new PiecePoint(x, y))
 
   init: ->
     @fill_points()
+    @setupPlayers()
     @setupPieces()
     @setupEventListener()
     @main()
@@ -342,12 +434,16 @@ class Chess
     @ctx.lineTo(s44_point.x_in_world(), s44_point.y_in_world())
     @ctx.stroke()
 
+  setupPlayers: ->
+    @player_red = new Player('red')
+    @player_black = new Player('black')
+    @current_player = @player_red
+
   setupPieces: ->
-    @pieces = []
-    for name in ['car_l', 'car_r', 'horse_l', 'horse_r', 'elephant_l', 'elephant_r', 'knight_l', 'knight_r', 'chief', 'gun_l', 'gun_r', 'soldier_1', 'soldier_2', 'soldier_3', 'soldier_4', 'soldier_5']
-      piece = new Piece(name, 'red')
-      @pieces.push(piece)
-      @current_points.push(piece.point)
+    @pieces.push.apply(@pieces, @player_red.spawn_pieces())
+    @pieces.push.apply(@pieces, @player_black.spawn_pieces())
+    Game.log("Piece count: #{@pieces.length}")
+    return
 
   setupEventListener: ->
     @canvas_element.addEventListener 'mousemove', (event) =>
@@ -359,7 +455,7 @@ class Chess
         else
           piece.hout()
 
-      for every_point in @all_points
+      for every_point in @points
         if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             every_point.hover()
@@ -377,7 +473,7 @@ class Chess
         else
           piece.deactive()
 
-      for every_point in @all_points
+      for every_point in @points
         if x >= every_point.x_in_world() - Game.radius && x <= every_point.x_in_world() + Game.radius && y >= every_point.y_in_world() - Game.radius && y <= every_point.y_in_world() + Game.radius
           if @is_blank_point(every_point)
             @target_point = every_point

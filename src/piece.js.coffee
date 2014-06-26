@@ -1,14 +1,19 @@
 class Piece
+  @reverse_point: (p) ->
+    { x: ( 8 - p.x ), y: ( 9 - p.y ) }
+
   constructor: (name_symbol, color) ->
     @name_symbol = name_symbol
+    @name = if @name_symbol.indexOf('_') > -1 then @name_symbol.split('_')[0] else @name_symbol
+
+    @is_alive = true
     @is_selected = false
     @is_hover = false
-    @name = if @name_symbol.indexOf('_') > -1 then @name_symbol.split('_')[0] else @name_symbol
     @color = color
     @point = new PiecePoint(@start_point().x, @start_point().y)
     @target_point = null
 
-  set_point:(point) ->
+  set_point: (point) ->
     @point = point
 
   move_to_point: (target_point) ->
@@ -25,9 +30,7 @@ class Piece
       if @target_point.x == @point.x && @target_point.y == @point.y
         @set_point(@target_point)
 
-
-
-  renderTo:(ctx) ->
+  renderTo: (ctx) ->
     ctx.beginPath()
     ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius, 0, 2 * Math.PI, false)
     ctx.fillStyle = @color
@@ -45,7 +48,7 @@ class Piece
     ctx.font = '20pt Calibri'
     ctx.fillStyle = '#FFF'
     ctx.textAlign = 'center'
-    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world()+10)
+    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
 
   label: ->
     l = null
@@ -67,23 +70,39 @@ class Piece
 
   start_point: ->
     switch @name_symbol
-      when 'car_l'      then {x:0,y:0}
-      when 'car_r'      then {x:8,y:0}
-      when 'horse_l'    then {x:1,y:0}
-      when 'horse_r'    then {x:7,y:0}
-      when 'elephant_l' then {x:2,y:0}
-      when 'elephant_r' then {x:6,y:0}
-      when 'knight_l'   then {x:3,y:0}
-      when 'knight_r'   then {x:5,y:0}
-      when 'chief'      then {x:4,y:0}
-      when 'gun_l'      then {x:1,y:2}
-      when 'gun_r'      then {x:7,y:2}
-      when 'soldier_1'  then {x:0,y:3}
-      when 'soldier_2'  then {x:2,y:3}
-      when 'soldier_3'  then {x:4,y:3}
-      when 'soldier_4'  then {x:6,y:3}
-      when 'soldier_5'  then {x:8,y:3}
-      when 'soldier_6'  then {x:9,y:3}
+      when 'car_l'
+        if @color == 'red' then {x: 0, y: 0} else Piece.reverse_point({x: 0, y: 0})
+      when 'car_r'
+        if @color == 'red' then {x: 8, y: 0} else Piece.reverse_point({x: 8, y: 0})
+      when 'horse_l'
+        if @color == 'red' then {x: 1, y: 0} else Piece.reverse_point({x: 1, y: 0})
+      when 'horse_r'
+        if @color == 'red' then {x: 7, y: 0} else Piece.reverse_point({x: 7, y: 0})
+      when 'elephant_l'
+        if @color == 'red' then  {x: 2, y: 0} else Piece.reverse_point({x: 2, y: 0})
+      when 'elephant_r'
+        if @color == 'red' then   {x: 6, y: 0} else Piece.reverse_point({x: 6, y: 0})
+      when 'knight_l'
+        if @color == 'red' then {x: 3, y: 0} else Piece.reverse_point({x: 3, y: 0})
+      when 'knight_r'
+        if @color == 'red' then {x: 5, y: 0} else Piece.reverse_point({x: 5, y: 0})
+      when 'chief'
+        if @color == 'red' then {x: 4, y: 0} else Piece.reverse_point({x: 4, y: 0})
+      when 'gun_l'
+        if @color == 'red' then {x: 1, y: 2} else Piece.reverse_point({x: 1, y: 2})
+      when 'gun_r'
+        if @color == 'red' then {x: 7, y: 2} else Piece.reverse_point({x: 7, y: 2})
+      when 'soldier_1'
+        if @color == 'red' then {x: 0, y: 3} else Piece.reverse_point({x: 0, y: 3})
+      when 'soldier_2'
+        if @color == 'red' then {x: 2, y: 3} else Piece.reverse_point({x: 2, y: 3})
+      when 'soldier_3'
+        if @color == 'red' then  {x: 4, y: 3} else Piece.reverse_point({x: 4, y: 3})
+      when 'soldier_4'
+        if @color == 'red' then  {x: 6, y: 3} else Piece.reverse_point({x: 6, y: 3})
+      when 'soldier_5'
+        if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
+
 
   active: ->
     @is_selected = true
