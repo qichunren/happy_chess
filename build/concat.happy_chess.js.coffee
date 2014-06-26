@@ -163,10 +163,10 @@ class Piece
           target_points.push(new PiecePoint(5, 2))
           target_points.push(new PiecePoint(5, 0))
       when 'chief' # max to 4 points
-        target_points.push(new PiecePoint(@point.x-1, @point.y-1)) if @point.x-1 >= 3 && @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x-1, @point.y+1)) if @point.x-1 >= 3 && @point.y+1 <= 2
-        target_points.push(new PiecePoint(@point.x+1, @point.y+1)) if @point.x+1 <= 5 && @point.y+1 <= 2
-        target_points.push(new PiecePoint(@point.x+1, @point.y-1)) if @point.x+1 <= 5 && @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x, @point.y-1)) if @point.y-1 >= 0
+        target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 2
+        target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 5
+        target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 3
       when 'gun'
         # todo
         []
@@ -205,6 +205,9 @@ class PiecePoint
     @moveable = false
     @is_selected = false
     @state = null # null means blank, it may be point to a red/black piece.
+    @marker_size1 = 12
+    @marker_size2 = 8
+    @marker_size3 = 6
 
   x_in_world: ->
     @x * Game.piece_padding + Game.margin_left
@@ -232,17 +235,29 @@ class PiecePoint
 
   renderTo:(ctx) ->
     if @is_hover
+#      ctx.beginPath()
+#      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
+#      ctx.lineWidth = 5
+#      ctx.strokeStyle = '#003300'
+#      ctx.stroke()
       ctx.beginPath()
-      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 5
-      ctx.strokeStyle = '#003300'
+      ctx.rect(@x_in_world()-@marker_size3/2, @y_in_world()-@marker_size3/2, @marker_size3, @marker_size3)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#FF9900'
       ctx.stroke()
     if @moveable
       ctx.beginPath()
-      ctx.arc(@x_in_world(), @y_in_world(), 4, 0, 2 * Math.PI, false)
-      ctx.lineWidth = 5
-      ctx.strokeStyle = '#FF9900'
+      ctx.rect(@x_in_world()-@marker_size2/2, @y_in_world()-@marker_size2/2, @marker_size2, @marker_size2)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = 'green'
       ctx.stroke()
+    if @is_selected
+      ctx.beginPath()
+      ctx.rect(@x_in_world()-@marker_size1/2, @y_in_world()-@marker_size1/2, @marker_size1, @marker_size1)
+      ctx.lineWidth = 1
+      ctx.strokeStyle = 'blue'
+      ctx.stroke()
+
 
   is_in: (points) ->
     is_include = false
@@ -353,10 +368,8 @@ class Chess
     for piece in @pieces
       if piece.is_selected
         console.log("Selected piece is #{piece.name_symbol} (#{piece.point.x},#{piece.point.y})")
-    for points_in_columns in @points
-      for point in points_in_columns
-        if point.is_selected
-          console.log("Selected point is (#{point.x},#{point.y})")
+    if @selected_point
+      console.log("Selected point is (#{@selected_point.x},#{@selected_point.y})")
     return
 
 
@@ -375,6 +388,14 @@ class Chess
         if @selected_point
           piece.move_to_point(@selected_point)
           piece.update(dt)
+#    has_selected_point = false
+#    for points_in_columns in @points
+#      for point in points_in_columns
+#        if point.is_selected
+#          has_selected_point = true
+#        break
+#    @selected_point = null if !has_selected_point
+
     return
 
   render: ->
