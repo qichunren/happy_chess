@@ -94,6 +94,14 @@ class Chess
   point:(x, y) ->
     @points[x][y]
 
+  # Get position (x, y) object, it may be: point, a red piece, or a black piece
+  position:(x, y) ->
+    point = @point(x, y)
+    return point if @is_blank_point(point)
+    for piece in @pieces
+      if piece.point.is_same(point)
+        return piece
+
   fill_points: ->
     column_array = [0..(@columns-1)]
     row_array = [0..(@rows-1)]
