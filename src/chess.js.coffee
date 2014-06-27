@@ -52,7 +52,7 @@ class Chess
         point.renderTo(@ctx)
 
     for piece in @pieces
-      piece.renderTo(@ctx)
+      piece.renderTo(@ctx) if piece.is_alive
     return
 
   constructor: (canvas_id = 'chess_game') ->
@@ -86,7 +86,7 @@ class Chess
   is_blank_point: (point) ->
     blank = true
     for piece in @pieces
-      if piece.point.is_same(point)
+      if piece.point.is_same(point) && piece.is_alive
         blank = false
         return blank
     blank
@@ -237,9 +237,12 @@ class Chess
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
-      for piece in @current_player.alive_pieces()
+      for piece in @pieces #@current_player.alive_pieces()
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
-          @select_piece(piece)
+          if piece.color == @current_player.color
+            @select_piece(piece)
+          else
+            @try_attack_piece(piece)
           Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
           break
 
@@ -255,6 +258,14 @@ class Chess
       for point in points_in_columns
         point.reset_moveable()
     return
+
+  try_attack_piece: (piece) ->
+    return if @selected_piece == null
+    moveable_points = @selected_piece.moveable_points()
+    if piece.point.is_in(moveable_points)
+      console.log('attack it!!!')
+      piece.is_alive = false
+      @select_point(piece.point)
 
   select_piece: (piece) ->
     @selected_point = null

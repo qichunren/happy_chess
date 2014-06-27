@@ -8,9 +8,12 @@ class Piece
     @is_alive = true
     @is_selected = false
     @is_hover = false
+    @attackable = true
     @color = color
     @point = new Point(@start_point().x, @start_point().y)
     @target_point = null
+    @radius = Game.radius
+    @selected_color = '#BDBDBD'
 
   move_to_point: (target_point) ->
     @target_point = target_point
@@ -30,24 +33,39 @@ class Piece
     return
 
   renderTo: (ctx) ->
+#    if @attackable == true
+#      ctx.beginPath()
+#      ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius+4, 0, 2 * Math.PI, false)
+#      ctx.fillStyle = 'red'
+#      ctx.fill()
+
     ctx.beginPath()
-    ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius, 0, 2 * Math.PI, false)
-    ctx.fillStyle = @color
+    ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
+    if @attackable == true
+      ctx.fillStyle = '#E9BEBE'
+    else if @is_selected || @is_hover
+      ctx.fillStyle =  @selected_color
+    else
+      ctx.fillStyle = '#EEEDDD'
     ctx.fill()
     ctx.lineWidth = 5
-    if @is_selected
-      ctx.strokeStyle = '#FF9900'
-    else
-      if @is_hover
-        ctx.strokeStyle = '#BDBDBD'
-      else
-        ctx.strokeStyle = '#003300'
+    ctx.strokeStyle = @color # border color
     ctx.stroke()
     ctx.font = '20pt Calibri'
-    ctx.fillStyle = '#FFF'
+    ctx.fillStyle = @color
     ctx.textAlign = 'center'
     ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
+
+
     return
+
+#  animate_size: ->
+#    if @radius <= Game.radius
+#      @radius = @radius + 0.1
+#    else if @radius >= Game.radius + 3
+#      @radius = @radius - 0.1
+#    else
+#      @radius = @radius + 0.1
 
   label: ->
     l = null
