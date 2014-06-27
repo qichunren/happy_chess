@@ -11,13 +11,18 @@ module.exports = function(grunt) {
             dist: {
                 src: ['src/game.js.coffee', 'src/piece.js.coffee', 'src/point.js.coffee', 'src/player.js.coffee', 'src/chess.js.coffee'],
                 dest: 'build/concat.<%= pkg.name %>.js.coffee'
+            },
+            server_dist: {
+                src: ['src/server/app.js.coffee'],
+                dest: 'build/concat.app.js.coffee'
             }
         },
         coffee: {
             compile: {
                 files: {
                     'build/<%= pkg.name %>.js':  '<%= concat.dist.dest %>',
-                    'public/assets/javascripts/<%= pkg.name %>.js':  '<%= concat.dist.dest %>'
+                    'public/assets/javascripts/<%= pkg.name %>.js':  '<%= concat.dist.dest %>',
+                    'index.js': '<%= concat.server_dist.dest %>'
                 }
             }
         },
@@ -31,7 +36,7 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            files: ['<%= concat.dist.src %>'],
+            files: ['<%= concat.dist.src %>', '<%= concat.server_dist.src %>'],
             tasks: ['concat', 'coffee']
         }
 

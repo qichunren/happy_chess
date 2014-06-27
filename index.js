@@ -1,26 +1,36 @@
-var express = require('express');
-var app = express();
+(function() {
+  var app, config, express, fs, io, port, server;
 
-var config = require('./config');
+  express = require("express");
 
-var server = require('http').createServer(app);
-var port = process.env.PORT || 3003;
+  app = express();
 
-var io = require('socket.io').listen(server);
-var fs = require('fs');
+  config = require("./config");
 
-app.set('views','./views/pages');
-app.set('view engine','jade');
-app.use(express.static(__dirname + '/public'));
+  server = require("http").createServer(app);
 
+  port = process.env.PORT || 3003;
 
-server.listen(port, function () {
-    console.log('Server listening at port %d', port);
-});
+  io = require("socket.io").listen(server);
 
-app.get('/',function(req,res){
-    res.render('index',{
-        title:'Happy Chess Game',
-        socketurl: config.serverurl + ":" + port
+  fs = require("fs");
+
+  app.set("views", "./views/pages");
+
+  app.set("view engine", "jade");
+
+  app.use(express["static"](__dirname + "/public"));
+
+  server.listen(port, function() {
+    console.log("Server listening at port %d", port);
+  });
+
+  app.get("/", function(req, res) {
+    console.log('request /');
+    res.render("index", {
+      title: "Happy Chess Game",
+      socketurl: config.serverurl + ":" + port
     });
-});
+  });
+
+}).call(this);
