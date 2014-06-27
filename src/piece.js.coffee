@@ -9,7 +9,7 @@ class Piece
     @is_selected = false
     @is_hover = false
     @color = color
-    @point = new PiecePoint(@start_point().x, @start_point().y)
+    @point = new Point(@start_point().x, @start_point().y)
     @target_point = null
 
   move_to_point: (target_point) ->
@@ -107,52 +107,52 @@ class Piece
     switch @name
       when 'carriage'
         for x in [0..8]
-          target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+          target_points.push(new Point(x, @point.y)) if x != @point.x
         for y in [0..9]
-          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
+          target_points.push(new Point(@point.x, y)) if y != @point.y
       when 'horse' # max to 8 points
-        target_points.push(new PiecePoint(@point.x+1, @point.y+2)) if @point.x+1 <= 8 && @point.y+2 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y+1)) if @point.x+2 <= 8 && @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y-1)) if @point.x+2 <= 8 && @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x+1, @point.y-2)) if @point.x+1 <= 8 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-1, @point.y-2)) if @point.x-1 >= 0 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y-1)) if @point.x-2 >= 0 && @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y+1)) if @point.x-2 >= 0 && @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x-1, @point.y+2)) if @point.x-1 >= 0 && @point.y+2 <= 9
+        target_points.push(new Point(@point.x+1, @point.y+2)) if @point.x+1 <= 8 && @point.y+2 <= 9
+        target_points.push(new Point(@point.x+2, @point.y+1)) if @point.x+2 <= 8 && @point.y+1 <= 9
+        target_points.push(new Point(@point.x+2, @point.y-1)) if @point.x+2 <= 8 && @point.y-1 >= 0
+        target_points.push(new Point(@point.x+1, @point.y-2)) if @point.x+1 <= 8 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-1, @point.y-2)) if @point.x-1 >= 0 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y-1)) if @point.x-2 >= 0 && @point.y-1 >= 0
+        target_points.push(new Point(@point.x-2, @point.y+1)) if @point.x-2 >= 0 && @point.y+1 <= 9
+        target_points.push(new Point(@point.x-1, @point.y+2)) if @point.x-1 >= 0 && @point.y+2 <= 9
       when 'elephant' # max to 4 points
-        target_points.push(new PiecePoint(@point.x-2, @point.y-2)) if @point.x-2 >= 0 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
-        target_points.push(new PiecePoint(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
-        target_points.push(new PiecePoint(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y-2)) if @point.x-2 >= 0 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
+        target_points.push(new Point(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
+        target_points.push(new Point(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
       when 'knight' # max to 4 points
         if @point.is_at(3, 0)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(3, 2)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(5, 2)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(5, 0)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(4, 1)
-          target_points.push(new PiecePoint(3, 0))
-          target_points.push(new PiecePoint(3, 2))
-          target_points.push(new PiecePoint(5, 2))
-          target_points.push(new PiecePoint(5, 0))
+          target_points.push(new Point(3, 0))
+          target_points.push(new Point(3, 2))
+          target_points.push(new Point(5, 2))
+          target_points.push(new Point(5, 0))
       when 'chief' # max to 4 points
-        target_points.push(new PiecePoint(@point.x, @point.y-1)) if @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 2
-        target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 5
-        target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 3
+        target_points.push(new Point(@point.x, @point.y-1)) if @point.y-1 >= 0
+        target_points.push(new Point(@point.x, @point.y+1)) if @point.y+1 <= 2
+        target_points.push(new Point(@point.x+1, @point.y)) if @point.x+1 <= 5
+        target_points.push(new Point(@point.x-1, @point.y)) if @point.x-1 >= 3
       when 'gun'
         # todo
         []
       when 'soldier' # only one move step when not cross river. After cross river, max move points to 3
         if @point.y <= 4
-          target_points.push(new PiecePoint(@point.x, @point.y+1))
+          target_points.push(new Point(@point.x, @point.y+1))
         else
-          target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 0
-          target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 8
-          target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 9
+          target_points.push(new Point(@point.x-1, @point.y)) if @point.x-1 >= 0
+          target_points.push(new Point(@point.x+1, @point.y)) if @point.x+1 <= 8
+          target_points.push(new Point(@point.x, @point.y+1)) if @point.y+1 <= 9
     target_points
 
   active: ->

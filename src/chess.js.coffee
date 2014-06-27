@@ -108,7 +108,7 @@ class Chess
     for y in row_array
       for x in column_array
         @points[x] ||= []
-        @points[x].push(new PiecePoint(x, y))
+        @points[x].push(new Point(x, y))
     return
 
   init: ->
