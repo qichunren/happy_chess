@@ -24,3 +24,28 @@ body {
     background-color: #000;
     color: #FFF;
 }
+
+#rooms_container {
+    float: left;
+}
+
+.room {
+    width: 200px;
+    height: 120px;
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #FFF;
+    background-color: #FF9900;
+    color: #FFF;
+    border-radius: 8px;
+    box-shadow: rgba(255,90,20,0.9) 0 0 0.3125em;
+}
+
+.room h3 {
+    margin: 0;
+    padding: 8px;
+    font-size: 18px;
+    overflow: hidden;
+    border-bottom: 1px solid #FFF;
+}

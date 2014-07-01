@@ -5,6 +5,7 @@ head
   title #{title}
   link(href="/assets/stylesheets/main.css",rel="stylesheet")
   script(src="/assets/javascripts/jquery-1.10.2.min.js")
+  script(src="http://underscorejs.org/underscore-min.js")
   script(src="/socket.io/socket.io.js")
   script(src='/assets/javascripts/happy_chess.js')
 
@@ -14,6 +15,14 @@ body
     button#clear_log(onclick="$('#debug').val('').focus()") Clear
     textarea#debug
 
+  #rooms_container
+    h3 游戏房间
+     #rooms
+
   script.
     var socket = io("#{socketurl}");
     var current_user = '#{username}';
+    $.getJSON( '/api/rooms.json', function( data ) {
+        var list = "<% _.each(rooms, function(room) { %> <div class='room'><h3><%= room.name %></h3><div class='inner'></div></div> <% }); %>";
+        $("#rooms").html(_.template(list, {rooms:data}));
+    });

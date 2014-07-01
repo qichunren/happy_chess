@@ -88,24 +88,25 @@
       }
     };
 
-    Piece.prototype.renderTo = function(ctx) {
-      ctx.beginPath();
-      ctx.arc(this.point.x_in_world(), this.point.y_in_world(), this.radius, 0, 2 * Math.PI, false);
+    Piece.prototype.renderTo = function(chess) {
+      this.chess = chess;
+      this.chess.ctx.beginPath();
+      this.chess.ctx.arc(this.point.x_in_world(), this.point.y_in_world(), this.radius, 0, 2 * Math.PI, false);
       if (this.attackable === true) {
-        ctx.fillStyle = '#E9BEBE';
+        this.chess.ctx.fillStyle = '#E9BEBE';
       } else if (this.is_selected || this.is_hover) {
-        ctx.fillStyle = this.selected_color;
+        this.chess.ctx.fillStyle = this.selected_color;
       } else {
-        ctx.fillStyle = '#EEEDDD';
+        this.chess.ctx.fillStyle = '#EEEDDD';
       }
-      ctx.fill();
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = this.color;
-      ctx.stroke();
-      ctx.font = '20pt Calibri';
-      ctx.fillStyle = this.color;
-      ctx.textAlign = 'center';
-      ctx.fillText(this.label(), this.point.x_in_world(), this.point.y_in_world() + 10);
+      this.chess.ctx.fill();
+      this.chess.ctx.lineWidth = 5;
+      this.chess.ctx.strokeStyle = this.color;
+      this.chess.ctx.stroke();
+      this.chess.ctx.font = '20pt Calibri';
+      this.chess.ctx.fillStyle = this.color;
+      this.chess.ctx.textAlign = 'center';
+      this.chess.ctx.fillText(this.label(), this.point.x_in_world(), this.point.y_in_world() + 10);
     };
 
     Piece.prototype.label = function() {
@@ -347,9 +348,113 @@
       }
     };
 
-    Piece.prototype.real_moveable_points = function(current_pieces) {};
-
     Piece.prototype.moveable_points = function() {
+      var point, target_points, x, y, _i, _j, _k, _l, _m, _n, _o, _p, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      target_points = [];
+      switch (this.name) {
+        case 'carriage':
+          if (this.point.x > 0) {
+            for (x = _i = _ref = this.point.x - 1; _ref <= 0 ? _i <= 0 : _i >= 0; x = _ref <= 0 ? ++_i : --_i) {
+              point = new Point(x, this.point.y);
+              if (this.chess.is_enemy_point(point)) {
+                target_points.push(point);
+                break;
+              } else if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.x < 8) {
+            for (x = _j = _ref1 = this.point.x + 1; _ref1 <= 8 ? _j <= 8 : _j >= 8; x = _ref1 <= 8 ? ++_j : --_j) {
+              point = new Point(x, this.point.y);
+              if (this.chess.is_enemy_point(point)) {
+                target_points.push(point);
+                break;
+              } else if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.y > 0) {
+            for (y = _k = _ref2 = this.point.y - 1; _ref2 <= 0 ? _k <= 0 : _k >= 0; y = _ref2 <= 0 ? ++_k : --_k) {
+              point = new Point(this.point.x, y);
+              if (this.chess.is_enemy_point(point)) {
+                target_points.push(point);
+                break;
+              }
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.y < 9) {
+            for (y = _l = _ref3 = this.point.y + 1; _ref3 <= 9 ? _l <= 9 : _l >= 9; y = _ref3 <= 9 ? ++_l : --_l) {
+              point = new Point(this.point.x, y);
+              console.log('point x,y', this.point.x, y);
+              if (this.chess.is_enemy_point(point)) {
+                target_points.push(point);
+                break;
+              }
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          break;
+        case 'gun':
+          if (this.point.x > 0) {
+            for (x = _m = _ref4 = this.point.x - 1; _ref4 <= 0 ? _m <= 0 : _m >= 0; x = _ref4 <= 0 ? ++_m : --_m) {
+              point = new Point(x, this.point.y);
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.x < 8) {
+            for (x = _n = _ref5 = this.point.x + 1; _ref5 <= 8 ? _n <= 8 : _n >= 8; x = _ref5 <= 8 ? ++_n : --_n) {
+              point = new Point(x, this.point.y);
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.y > 0) {
+            for (y = _o = _ref6 = this.point.y - 1; _ref6 <= 0 ? _o <= 0 : _o >= 0; y = _ref6 <= 0 ? ++_o : --_o) {
+              point = new Point(this.point.x, y);
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+          if (this.point.y < 9) {
+            for (y = _p = _ref7 = this.point.y + 1; _ref7 <= 9 ? _p <= 9 : _p >= 9; y = _ref7 <= 9 ? ++_p : --_p) {
+              point = new Point(this.point.x, y);
+              if (this.chess.is_blank_point(point)) {
+                target_points.push(point);
+              } else {
+                break;
+              }
+            }
+          }
+      }
+      return target_points;
+    };
+
+    Piece.prototype.moveable_points_with_alone = function() {
       var target_points, x, y, _i, _j;
       target_points = [];
       switch (this.name) {
@@ -772,7 +877,7 @@
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         piece = _ref1[_k];
         if (piece.is_alive) {
-          piece.renderTo(this.ctx);
+          piece.renderTo(this);
         }
       }
     };
@@ -818,6 +923,20 @@
         }
       }
       return blank;
+    };
+
+    Chess.prototype.is_enemy_point = function(point) {
+      var enemy, piece, _i, _len, _ref;
+      enemy = false;
+      _ref = this.enemy_pieces();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        piece = _ref[_i];
+        if (piece.point.is_same(point)) {
+          enemy = true;
+          return enemy;
+        }
+      }
+      return enemy;
     };
 
     Chess.prototype.point = function(x, y) {
@@ -952,12 +1071,17 @@
       this.player_red = new Player('red');
       this.player_black = new Player('black');
       this.current_player = this.player_red;
+      this.enemy_player = this.player_black;
     };
 
     Chess.prototype.setupPieces = function() {
       this.pieces.push.apply(this.pieces, this.player_red.spawn_pieces());
       this.pieces.push.apply(this.pieces, this.player_black.spawn_pieces());
       Game.log("Piece count: " + this.pieces.length);
+    };
+
+    Chess.prototype.enemy_pieces = function() {
+      return this.enemy_player.alive_pieces();
     };
 
     Chess.prototype.setupEventListener = function() {
@@ -1015,6 +1139,7 @@
                 _this.try_attack_piece(piece);
               }
               Game.log("selected piece:" + piece.name + ", x,y:" + piece.point.x + "," + piece.point.y);
+              Game.log("Moveable points " + (piece.moveable_points().length));
               break;
             }
           }

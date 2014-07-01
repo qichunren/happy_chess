@@ -8,6 +8,7 @@ server = require("http").createServer(app)
 port = process.env.PORT or 3003
 io = require("socket.io").listen(server)
 fs = require("fs")
+
 app.set "views", "./views/pages"
 app.set "view engine", "jade"
 app.use bodyParser.json()
@@ -15,8 +16,13 @@ app.use bodyParser.urlencoded(extended: true)
 app.use cookieParser('qichunren')
 app.use express.static(__dirname + "/public")
 
+room_manager = new RoomManager(5)
+room = new Room("TEST Room 1")
+room_manager.add_room(room)
+console.log("rooms:", room_manager.get_rooms_json_array())
+
 router.get "/", (req, res) ->
-  console.log "cookies user:", req.cookies
+
   if req.cookies.user
     res.render "index",
       title: "Happy Chess Game"
@@ -37,6 +43,10 @@ router.post "/signin", (req, res) ->
   console.log req.body
   res.redirect('/')
   return
+
+router.get "/api/rooms.json", (req, res) ->
+  res.json(room_manager.get_rooms_json_array())
+
 
 app.use('/', router)
 

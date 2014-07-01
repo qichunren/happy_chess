@@ -56,31 +56,30 @@ class Piece
         @is_selected = false
     return
 
-  renderTo: (ctx) ->
+  renderTo: (chess) ->
+    @chess = chess
 #    if @attackable == true
 #      ctx.beginPath()
 #      ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius+4, 0, 2 * Math.PI, false)
 #      ctx.fillStyle = 'red'
 #      ctx.fill()
 
-    ctx.beginPath()
-    ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
+    @chess.ctx.beginPath()
+    @chess.ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
     if @attackable == true
-      ctx.fillStyle = '#E9BEBE'
+      @chess.ctx.fillStyle = '#E9BEBE'
     else if @is_selected || @is_hover
-      ctx.fillStyle =  @selected_color
+      @chess.ctx.fillStyle =  @selected_color
     else
-      ctx.fillStyle = '#EEEDDD'
-    ctx.fill()
-    ctx.lineWidth = 5
-    ctx.strokeStyle = @color # border color
-    ctx.stroke()
-    ctx.font = '20pt Calibri'
-    ctx.fillStyle = @color
-    ctx.textAlign = 'center'
-    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
-
-
+      @chess.ctx.fillStyle = '#EEEDDD'
+    @chess.ctx.fill()
+    @chess.ctx.lineWidth = 5
+    @chess.ctx.strokeStyle = @color # border color
+    @chess.ctx.stroke()
+    @chess.ctx.font = '20pt Calibri'
+    @chess.ctx.fillStyle = @color
+    @chess.ctx.textAlign = 'center'
+    @chess.ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
     return
 
 #  animate_size: ->
@@ -144,15 +143,86 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
-  real_moveable_points: (current_pieces) ->
-#    target_points = []
-#    switch @name
-#      when 'carriage'
-#        for x in [0..@point.x]
-
-
-
+  # Not include attackable enmy peices.
   moveable_points: ->
+    target_points = []
+    switch @name
+      when 'carriage'
+        if @point.x > 0
+          for x in [(@point.x-1)..0]
+            point = new Point(x, @point.y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            else if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.x < 8
+          for x in [(@point.x+1)..8]
+            point = new Point(x, @point.y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            else if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y > 0
+          for y in [(@point.y-1)..0]
+            point = new Point(@point.x, y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y < 9
+          for y in [(@point.y+1)..9]
+            point = new Point(@point.x, y)
+            console.log('point x,y', @point.x, y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+      when 'gun'
+        if @point.x > 0
+          for x in [(@point.x-1)..0]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.x < 8
+          for x in [(@point.x+1)..8]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y > 0
+          for y in [(@point.y-1)..0]
+            point = new Point(@point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y < 9
+          for y in [(@point.y+1)..9]
+            point = new Point(@point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+
+    target_points
+
+  # This method get a piece's all moveable points ignore pieces on chess panel.
+  moveable_points_with_alone: ->
     target_points = []
     switch @name
       when 'carriage'
@@ -442,7 +512,7 @@ class Chess
         point.renderTo(@ctx)
 
     for piece in @pieces
-      piece.renderTo(@ctx) if piece.is_alive
+      piece.renderTo(this) if piece.is_alive
     return
 
   constructor: (canvas_id = 'chess_game') ->
@@ -480,6 +550,15 @@ class Chess
         blank = false
         return blank
     blank
+
+  is_enemy_point: (point) ->
+    enemy = false
+    for piece in @enemy_pieces()
+      if piece.point.is_same(point)
+        enemy = true
+        return enemy
+    enemy
+
 
   point:(x, y) ->
     @points[x][y]
@@ -598,6 +677,7 @@ class Chess
     @player_red = new Player('red')
     @player_black = new Player('black')
     @current_player = @player_red
+    @enemy_player   = @player_black
     return
 
   setupPieces: ->
@@ -605,6 +685,9 @@ class Chess
     @pieces.push.apply(@pieces, @player_black.spawn_pieces())
     Game.log("Piece count: #{@pieces.length}")
     return
+
+  enemy_pieces: ->
+    @enemy_player.alive_pieces()
 
   setupEventListener: ->
     @canvas_element.addEventListener 'mousemove', (event) =>
@@ -627,13 +710,14 @@ class Chess
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
-      for piece in @pieces #@current_player.alive_pieces()
+      for piece in @pieces
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           if piece.color == @current_player.color
             @select_piece(piece)
           else
             @try_attack_piece(piece)
           Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
+          Game.log("Moveable points #{piece.moveable_points().length}")
           break
 
       for points_in_columns in @points

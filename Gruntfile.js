@@ -13,7 +13,7 @@ module.exports = function(grunt) {
                 dest: 'build/concat.<%= pkg.name %>.js.coffee'
             },
             server_dist: {
-                src: ['src/server/app.js.coffee'],
+                src: ['src/server/00_require.js.coffee','src/server/room.js.coffee', 'src/server/player.js.coffee', 'src/server/room_manager.js.coffee', 'src/server/app.js.coffee'],
                 dest: 'build/concat.app.js.coffee'
             }
         },
