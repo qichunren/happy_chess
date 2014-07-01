@@ -1,5 +1,5 @@
 (function() {
-  var Chess, Piece, PiecePoint, Player, requestAnimFrame,
+  var Chess, Piece, Player, Point, requestAnimFrame,
     __hasProp = {}.hasOwnProperty,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -51,9 +51,12 @@
       this.is_alive = true;
       this.is_selected = false;
       this.is_hover = false;
+      this.attackable = true;
       this.color = color;
-      this.point = new PiecePoint(this.start_point().x, this.start_point().y);
+      this.point = new Point(this.start_point().x, this.start_point().y);
       this.target_point = null;
+      this.radius = Game.radius;
+      this.selected_color = '#BDBDBD';
     }
 
     Piece.prototype.move_to_point = function(target_point) {
@@ -87,22 +90,20 @@
 
     Piece.prototype.renderTo = function(ctx) {
       ctx.beginPath();
-      ctx.arc(this.point.x_in_world(), this.point.y_in_world(), Game.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = this.color;
+      ctx.arc(this.point.x_in_world(), this.point.y_in_world(), this.radius, 0, 2 * Math.PI, false);
+      if (this.attackable === true) {
+        ctx.fillStyle = '#E9BEBE';
+      } else if (this.is_selected || this.is_hover) {
+        ctx.fillStyle = this.selected_color;
+      } else {
+        ctx.fillStyle = '#EEEDDD';
+      }
       ctx.fill();
       ctx.lineWidth = 5;
-      if (this.is_selected) {
-        ctx.strokeStyle = '#FF9900';
-      } else {
-        if (this.is_hover) {
-          ctx.strokeStyle = '#BDBDBD';
-        } else {
-          ctx.strokeStyle = '#003300';
-        }
-      }
+      ctx.strokeStyle = this.color;
       ctx.stroke();
       ctx.font = '20pt Calibri';
-      ctx.fillStyle = '#FFF';
+      ctx.fillStyle = this.color;
       ctx.textAlign = 'center';
       ctx.fillText(this.label(), this.point.x_in_world(), this.point.y_in_world() + 10);
     };
@@ -346,6 +347,8 @@
       }
     };
 
+    Piece.prototype.real_moveable_points = function(current_pieces) {};
+
     Piece.prototype.moveable_points = function() {
       var target_points, x, y, _i, _j;
       target_points = [];
@@ -353,83 +356,83 @@
         case 'carriage':
           for (x = _i = 0; _i <= 8; x = ++_i) {
             if (x !== this.point.x) {
-              target_points.push(new PiecePoint(x, this.point.y));
+              target_points.push(new Point(x, this.point.y));
             }
           }
           for (y = _j = 0; _j <= 9; y = ++_j) {
             if (y !== this.point.y) {
-              target_points.push(new PiecePoint(this.point.x, y));
+              target_points.push(new Point(this.point.x, y));
             }
           }
           break;
         case 'horse':
           if (this.point.x + 1 <= 8 && this.point.y + 2 <= 9) {
-            target_points.push(new PiecePoint(this.point.x + 1, this.point.y + 2));
+            target_points.push(new Point(this.point.x + 1, this.point.y + 2));
           }
           if (this.point.x + 2 <= 8 && this.point.y + 1 <= 9) {
-            target_points.push(new PiecePoint(this.point.x + 2, this.point.y + 1));
+            target_points.push(new Point(this.point.x + 2, this.point.y + 1));
           }
           if (this.point.x + 2 <= 8 && this.point.y - 1 >= 0) {
-            target_points.push(new PiecePoint(this.point.x + 2, this.point.y - 1));
+            target_points.push(new Point(this.point.x + 2, this.point.y - 1));
           }
           if (this.point.x + 1 <= 8 && this.point.y - 2 >= 0) {
-            target_points.push(new PiecePoint(this.point.x + 1, this.point.y - 2));
+            target_points.push(new Point(this.point.x + 1, this.point.y - 2));
           }
           if (this.point.x - 1 >= 0 && this.point.y - 2 >= 0) {
-            target_points.push(new PiecePoint(this.point.x - 1, this.point.y - 2));
+            target_points.push(new Point(this.point.x - 1, this.point.y - 2));
           }
           if (this.point.x - 2 >= 0 && this.point.y - 1 >= 0) {
-            target_points.push(new PiecePoint(this.point.x - 2, this.point.y - 1));
+            target_points.push(new Point(this.point.x - 2, this.point.y - 1));
           }
           if (this.point.x - 2 >= 0 && this.point.y + 1 <= 9) {
-            target_points.push(new PiecePoint(this.point.x - 2, this.point.y + 1));
+            target_points.push(new Point(this.point.x - 2, this.point.y + 1));
           }
           if (this.point.x - 1 >= 0 && this.point.y + 2 <= 9) {
-            target_points.push(new PiecePoint(this.point.x - 1, this.point.y + 2));
+            target_points.push(new Point(this.point.x - 1, this.point.y + 2));
           }
           break;
         case 'elephant':
           if (this.point.x - 2 >= 0 && this.point.y - 2 >= 0) {
-            target_points.push(new PiecePoint(this.point.x - 2, this.point.y - 2));
+            target_points.push(new Point(this.point.x - 2, this.point.y - 2));
           }
           if (this.point.x - 2 >= 0 && this.point.y + 2 <= 4) {
-            target_points.push(new PiecePoint(this.point.x - 2, this.point.y + 2));
+            target_points.push(new Point(this.point.x - 2, this.point.y + 2));
           }
           if (this.point.x + 2 <= 8 && this.point.y + 2 <= 4) {
-            target_points.push(new PiecePoint(this.point.x + 2, this.point.y + 2));
+            target_points.push(new Point(this.point.x + 2, this.point.y + 2));
           }
           if (this.point.x + 2 <= 8 && this.point.y - 2 >= 0) {
-            target_points.push(new PiecePoint(this.point.x + 2, this.point.y - 2));
+            target_points.push(new Point(this.point.x + 2, this.point.y - 2));
           }
           break;
         case 'knight':
           if (this.point.is_at(3, 0)) {
-            target_points.push(new PiecePoint(4, 1));
+            target_points.push(new Point(4, 1));
           } else if (this.point.is_at(3, 2)) {
-            target_points.push(new PiecePoint(4, 1));
+            target_points.push(new Point(4, 1));
           } else if (this.point.is_at(5, 2)) {
-            target_points.push(new PiecePoint(4, 1));
+            target_points.push(new Point(4, 1));
           } else if (this.point.is_at(5, 0)) {
-            target_points.push(new PiecePoint(4, 1));
+            target_points.push(new Point(4, 1));
           } else if (this.point.is_at(4, 1)) {
-            target_points.push(new PiecePoint(3, 0));
-            target_points.push(new PiecePoint(3, 2));
-            target_points.push(new PiecePoint(5, 2));
-            target_points.push(new PiecePoint(5, 0));
+            target_points.push(new Point(3, 0));
+            target_points.push(new Point(3, 2));
+            target_points.push(new Point(5, 2));
+            target_points.push(new Point(5, 0));
           }
           break;
         case 'chief':
           if (this.point.y - 1 >= 0) {
-            target_points.push(new PiecePoint(this.point.x, this.point.y - 1));
+            target_points.push(new Point(this.point.x, this.point.y - 1));
           }
           if (this.point.y + 1 <= 2) {
-            target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
+            target_points.push(new Point(this.point.x, this.point.y + 1));
           }
           if (this.point.x + 1 <= 5) {
-            target_points.push(new PiecePoint(this.point.x + 1, this.point.y));
+            target_points.push(new Point(this.point.x + 1, this.point.y));
           }
           if (this.point.x - 1 >= 3) {
-            target_points.push(new PiecePoint(this.point.x - 1, this.point.y));
+            target_points.push(new Point(this.point.x - 1, this.point.y));
           }
           break;
         case 'gun':
@@ -437,16 +440,16 @@
           break;
         case 'soldier':
           if (this.point.y <= 4) {
-            target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
+            target_points.push(new Point(this.point.x, this.point.y + 1));
           } else {
             if (this.point.x - 1 >= 0) {
-              target_points.push(new PiecePoint(this.point.x - 1, this.point.y));
+              target_points.push(new Point(this.point.x - 1, this.point.y));
             }
             if (this.point.x + 1 <= 8) {
-              target_points.push(new PiecePoint(this.point.x + 1, this.point.y));
+              target_points.push(new Point(this.point.x + 1, this.point.y));
             }
             if (this.point.y + 1 <= 9) {
-              target_points.push(new PiecePoint(this.point.x, this.point.y + 1));
+              target_points.push(new Point(this.point.x, this.point.y + 1));
             }
           }
       }
@@ -473,12 +476,12 @@
 
   })();
 
-  PiecePoint = (function() {
-    PiecePoint.clone = function(point) {
-      return new PiecePoint(point.x, point.y);
+  Point = (function() {
+    Point.clone = function(point) {
+      return new Point(point.x, point.y);
     };
 
-    function PiecePoint(x, y) {
+    function Point(x, y) {
       this.x = x;
       this.y = y;
       this.is_hover = false;
@@ -490,39 +493,39 @@
       this.marker_size3 = 6;
     }
 
-    PiecePoint.prototype.x_in_world = function() {
+    Point.prototype.x_in_world = function() {
       return this.x * Game.piece_padding + Game.margin_left;
     };
 
-    PiecePoint.prototype.y_in_world = function() {
+    Point.prototype.y_in_world = function() {
       return ((Game.rows - 1) - this.y) * Game.piece_padding + Game.margin_top;
     };
 
-    PiecePoint.prototype.is_at = function(x, y) {
+    Point.prototype.is_at = function(x, y) {
       return this.x === x && this.y === y;
     };
 
-    PiecePoint.prototype.is_same = function(other) {
+    Point.prototype.is_same = function(other) {
       return this.x === other.x && this.y === other.y;
     };
 
-    PiecePoint.prototype.hover = function() {
+    Point.prototype.hover = function() {
       return this.is_hover = true;
     };
 
-    PiecePoint.prototype.hout = function() {
+    Point.prototype.hout = function() {
       return this.is_hover = false;
     };
 
-    PiecePoint.prototype.mark_moveable = function() {
+    Point.prototype.mark_moveable = function() {
       return this.moveable = true;
     };
 
-    PiecePoint.prototype.reset_moveable = function() {
+    Point.prototype.reset_moveable = function() {
       return this.moveable = false;
     };
 
-    PiecePoint.prototype.renderTo = function(ctx) {
+    Point.prototype.renderTo = function(ctx) {
       if (this.is_hover) {
         ctx.beginPath();
         ctx.rect(this.x_in_world() - this.marker_size3 / 2, this.y_in_world() - this.marker_size3 / 2, this.marker_size3, this.marker_size3);
@@ -546,7 +549,7 @@
       }
     };
 
-    PiecePoint.prototype.is_in = function(points) {
+    Point.prototype.is_in = function(points) {
       var is_include, point, _i, _len;
       is_include = false;
       for (_i = 0, _len = points.length; _i < _len; _i++) {
@@ -559,45 +562,45 @@
       return is_include;
     };
 
-    PiecePoint.prototype.is_at_top_edge = function() {
+    Point.prototype.is_at_top_edge = function() {
       return this.y === 9;
     };
 
-    PiecePoint.prototype.is_at_bottom = function() {
+    Point.prototype.is_at_bottom = function() {
       return this.y === 0;
     };
 
-    PiecePoint.prototype.is_at_left_edge = function() {
+    Point.prototype.is_at_left_edge = function() {
       return this.x === 0;
     };
 
-    PiecePoint.prototype.is_at_right_edge = function() {
+    Point.prototype.is_at_right_edge = function() {
       return this.x === (Game.columns - 1);
     };
 
-    PiecePoint.prototype.is_at_self_river = function() {
+    Point.prototype.is_at_self_river = function() {
       return this.y === 4;
     };
 
-    PiecePoint.prototype.is_at_enmy_river = function() {
+    Point.prototype.is_at_enmy_river = function() {
       return this.y === 5;
     };
 
-    PiecePoint.prototype.toPosition = function() {
+    Point.prototype.toPosition = function() {
       return {
         x: this.x * Game.piece_padding,
         y: ((Game.rows - 1) - this.y) * Game.piece_padding
       };
     };
 
-    PiecePoint.prototype.toPositionInWorld = function() {
+    Point.prototype.toPositionInWorld = function() {
       return {
         x: this.x * Game.piece_padding + Game.margin_left,
         y: ((Game.rows - 1) - this.y) * Game.piece_padding + Game.margin_top
       };
     };
 
-    return PiecePoint;
+    return Point;
 
   })();
 
@@ -768,7 +771,9 @@
       _ref1 = this.pieces;
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         piece = _ref1[_k];
-        piece.renderTo(this.ctx);
+        if (piece.is_alive) {
+          piece.renderTo(this.ctx);
+        }
       }
     };
 
@@ -807,7 +812,7 @@
       _ref = this.pieces;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         piece = _ref[_i];
-        if (piece.point.is_same(point)) {
+        if (piece.point.is_same(point) && piece.is_alive) {
           blank = false;
           return blank;
         }
@@ -817,6 +822,21 @@
 
     Chess.prototype.point = function(x, y) {
       return this.points[x][y];
+    };
+
+    Chess.prototype.position = function(x, y) {
+      var piece, point, _i, _len, _ref;
+      point = this.point(x, y);
+      if (this.is_blank_point(point)) {
+        return point;
+      }
+      _ref = this.pieces;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        piece = _ref[_i];
+        if (piece.point.is_same(point)) {
+          return piece;
+        }
+      }
     };
 
     Chess.prototype.fill_points = function() {
@@ -836,7 +856,7 @@
         for (_l = 0, _len1 = column_array.length; _l < _len1; _l++) {
           x = column_array[_l];
           (_base = this.points)[x] || (_base[x] = []);
-          this.points[x].push(new PiecePoint(x, y));
+          this.points[x].push(new Point(x, y));
         }
       }
     };
@@ -985,11 +1005,15 @@
           var piece, point, points_in_columns, x, y, _i, _j, _len, _len1, _ref, _ref1, _results;
           x = event.pageX - _this.canvasElemLeft;
           y = event.pageY - _this.canvasElemTop;
-          _ref = _this.current_player.alive_pieces();
+          _ref = _this.pieces;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             piece = _ref[_i];
             if (x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius) {
-              _this.select_piece(piece);
+              if (piece.color === _this.current_player.color) {
+                _this.select_piece(piece);
+              } else {
+                _this.try_attack_piece(piece);
+              }
               Game.log("selected piece:" + piece.name + ", x,y:" + piece.point.x + "," + piece.point.y);
               break;
             }
@@ -1027,6 +1051,19 @@
           point = points_in_columns[_j];
           point.reset_moveable();
         }
+      }
+    };
+
+    Chess.prototype.try_attack_piece = function(piece) {
+      var moveable_points;
+      if (this.selected_piece === null) {
+        return;
+      }
+      moveable_points = this.selected_piece.moveable_points();
+      if (piece.point.is_in(moveable_points)) {
+        console.log('attack it!!!');
+        piece.is_alive = false;
+        return this.select_point(piece.point);
       }
     };
 

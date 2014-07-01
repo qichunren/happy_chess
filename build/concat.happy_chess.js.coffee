@@ -32,9 +32,12 @@ class Piece
     @is_alive = true
     @is_selected = false
     @is_hover = false
+    @attackable = true
     @color = color
-    @point = new PiecePoint(@start_point().x, @start_point().y)
+    @point = new Point(@start_point().x, @start_point().y)
     @target_point = null
+    @radius = Game.radius
+    @selected_color = '#BDBDBD'
 
   move_to_point: (target_point) ->
     @target_point = target_point
@@ -54,24 +57,39 @@ class Piece
     return
 
   renderTo: (ctx) ->
+#    if @attackable == true
+#      ctx.beginPath()
+#      ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius+4, 0, 2 * Math.PI, false)
+#      ctx.fillStyle = 'red'
+#      ctx.fill()
+
     ctx.beginPath()
-    ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius, 0, 2 * Math.PI, false)
-    ctx.fillStyle = @color
+    ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
+    if @attackable == true
+      ctx.fillStyle = '#E9BEBE'
+    else if @is_selected || @is_hover
+      ctx.fillStyle =  @selected_color
+    else
+      ctx.fillStyle = '#EEEDDD'
     ctx.fill()
     ctx.lineWidth = 5
-    if @is_selected
-      ctx.strokeStyle = '#FF9900'
-    else
-      if @is_hover
-        ctx.strokeStyle = '#BDBDBD'
-      else
-        ctx.strokeStyle = '#003300'
+    ctx.strokeStyle = @color # border color
     ctx.stroke()
     ctx.font = '20pt Calibri'
-    ctx.fillStyle = '#FFF'
+    ctx.fillStyle = @color
     ctx.textAlign = 'center'
     ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
+
+
     return
+
+#  animate_size: ->
+#    if @radius <= Game.radius
+#      @radius = @radius + 0.1
+#    else if @radius >= Game.radius + 3
+#      @radius = @radius - 0.1
+#    else
+#      @radius = @radius + 0.1
 
   label: ->
     l = null
@@ -126,57 +144,65 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
+  real_moveable_points: (current_pieces) ->
+#    target_points = []
+#    switch @name
+#      when 'carriage'
+#        for x in [0..@point.x]
+
+
+
   moveable_points: ->
     target_points = []
     switch @name
       when 'carriage'
         for x in [0..8]
-          target_points.push(new PiecePoint(x, @point.y)) if x != @point.x
+          target_points.push(new Point(x, @point.y)) if x != @point.x
         for y in [0..9]
-          target_points.push(new PiecePoint(@point.x, y)) if y != @point.y
+          target_points.push(new Point(@point.x, y)) if y != @point.y
       when 'horse' # max to 8 points
-        target_points.push(new PiecePoint(@point.x+1, @point.y+2)) if @point.x+1 <= 8 && @point.y+2 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y+1)) if @point.x+2 <= 8 && @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x+2, @point.y-1)) if @point.x+2 <= 8 && @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x+1, @point.y-2)) if @point.x+1 <= 8 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-1, @point.y-2)) if @point.x-1 >= 0 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y-1)) if @point.x-2 >= 0 && @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y+1)) if @point.x-2 >= 0 && @point.y+1 <= 9
-        target_points.push(new PiecePoint(@point.x-1, @point.y+2)) if @point.x-1 >= 0 && @point.y+2 <= 9
+        target_points.push(new Point(@point.x+1, @point.y+2)) if @point.x+1 <= 8 && @point.y+2 <= 9
+        target_points.push(new Point(@point.x+2, @point.y+1)) if @point.x+2 <= 8 && @point.y+1 <= 9
+        target_points.push(new Point(@point.x+2, @point.y-1)) if @point.x+2 <= 8 && @point.y-1 >= 0
+        target_points.push(new Point(@point.x+1, @point.y-2)) if @point.x+1 <= 8 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-1, @point.y-2)) if @point.x-1 >= 0 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y-1)) if @point.x-2 >= 0 && @point.y-1 >= 0
+        target_points.push(new Point(@point.x-2, @point.y+1)) if @point.x-2 >= 0 && @point.y+1 <= 9
+        target_points.push(new Point(@point.x-1, @point.y+2)) if @point.x-1 >= 0 && @point.y+2 <= 9
       when 'elephant' # max to 4 points
-        target_points.push(new PiecePoint(@point.x-2, @point.y-2)) if @point.x-2 >= 0 && @point.y-2 >= 0
-        target_points.push(new PiecePoint(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
-        target_points.push(new PiecePoint(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
-        target_points.push(new PiecePoint(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y-2)) if @point.x-2 >= 0 && @point.y-2 >= 0
+        target_points.push(new Point(@point.x-2, @point.y+2)) if @point.x-2 >= 0 && @point.y+2 <= 4
+        target_points.push(new Point(@point.x+2, @point.y+2)) if @point.x+2 <= 8 && @point.y+2 <= 4
+        target_points.push(new Point(@point.x+2, @point.y-2)) if @point.x+2 <= 8 && @point.y-2 >= 0
       when 'knight' # max to 4 points
         if @point.is_at(3, 0)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(3, 2)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(5, 2)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(5, 0)
-          target_points.push(new PiecePoint(4, 1))
+          target_points.push(new Point(4, 1))
         else if @point.is_at(4, 1)
-          target_points.push(new PiecePoint(3, 0))
-          target_points.push(new PiecePoint(3, 2))
-          target_points.push(new PiecePoint(5, 2))
-          target_points.push(new PiecePoint(5, 0))
+          target_points.push(new Point(3, 0))
+          target_points.push(new Point(3, 2))
+          target_points.push(new Point(5, 2))
+          target_points.push(new Point(5, 0))
       when 'chief' # max to 4 points
-        target_points.push(new PiecePoint(@point.x, @point.y-1)) if @point.y-1 >= 0
-        target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 2
-        target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 5
-        target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 3
+        target_points.push(new Point(@point.x, @point.y-1)) if @point.y-1 >= 0
+        target_points.push(new Point(@point.x, @point.y+1)) if @point.y+1 <= 2
+        target_points.push(new Point(@point.x+1, @point.y)) if @point.x+1 <= 5
+        target_points.push(new Point(@point.x-1, @point.y)) if @point.x-1 >= 3
       when 'gun'
         # todo
         []
       when 'soldier' # only one move step when not cross river. After cross river, max move points to 3
         if @point.y <= 4
-          target_points.push(new PiecePoint(@point.x, @point.y+1))
+          target_points.push(new Point(@point.x, @point.y+1))
         else
-          target_points.push(new PiecePoint(@point.x-1, @point.y)) if @point.x-1 >= 0
-          target_points.push(new PiecePoint(@point.x+1, @point.y)) if @point.x+1 <= 8
-          target_points.push(new PiecePoint(@point.x, @point.y+1)) if @point.y+1 <= 9
+          target_points.push(new Point(@point.x-1, @point.y)) if @point.x-1 >= 0
+          target_points.push(new Point(@point.x+1, @point.y)) if @point.x+1 <= 8
+          target_points.push(new Point(@point.x, @point.y+1)) if @point.y+1 <= 9
     target_points
 
   active: ->
@@ -193,10 +219,10 @@ class Piece
 
 #### Another file ####
 
-class PiecePoint
+class Point
 
   @clone:(point) ->
-    new PiecePoint(point.x, point.y)
+    new Point(point.x, point.y)
 
   constructor: (x, y) ->
     @x = x
@@ -416,7 +442,7 @@ class Chess
         point.renderTo(@ctx)
 
     for piece in @pieces
-      piece.renderTo(@ctx)
+      piece.renderTo(@ctx) if piece.is_alive
     return
 
   constructor: (canvas_id = 'chess_game') ->
@@ -450,7 +476,7 @@ class Chess
   is_blank_point: (point) ->
     blank = true
     for piece in @pieces
-      if piece.point.is_same(point)
+      if piece.point.is_same(point) && piece.is_alive
         blank = false
         return blank
     blank
@@ -458,13 +484,21 @@ class Chess
   point:(x, y) ->
     @points[x][y]
 
+  # Get position (x, y) object, it may be: point, a red piece, or a black piece
+  position:(x, y) ->
+    point = @point(x, y)
+    return point if @is_blank_point(point)
+    for piece in @pieces
+      if piece.point.is_same(point)
+        return piece
+
   fill_points: ->
     column_array = [0..(@columns-1)]
     row_array = [0..(@rows-1)]
     for y in row_array
       for x in column_array
         @points[x] ||= []
-        @points[x].push(new PiecePoint(x, y))
+        @points[x].push(new Point(x, y))
     return
 
   init: ->
@@ -593,9 +627,12 @@ class Chess
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
-      for piece in @current_player.alive_pieces()
+      for piece in @pieces #@current_player.alive_pieces()
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
-          @select_piece(piece)
+          if piece.color == @current_player.color
+            @select_piece(piece)
+          else
+            @try_attack_piece(piece)
           Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
           break
 
@@ -611,6 +648,14 @@ class Chess
       for point in points_in_columns
         point.reset_moveable()
     return
+
+  try_attack_piece: (piece) ->
+    return if @selected_piece == null
+    moveable_points = @selected_piece.moveable_points()
+    if piece.point.is_in(moveable_points)
+      console.log('attack it!!!')
+      piece.is_alive = false
+      @select_point(piece.point)
 
   select_piece: (piece) ->
     @selected_point = null

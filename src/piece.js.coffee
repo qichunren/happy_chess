@@ -120,6 +120,14 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
+  real_moveable_points: (current_pieces) ->
+#    target_points = []
+#    switch @name
+#      when 'carriage'
+#        for x in [0..@point.x]
+
+
+
   moveable_points: ->
     target_points = []
     switch @name

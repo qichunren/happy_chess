@@ -1,0 +1,14 @@
+doctype
+head
+  meta(charset="utf-8")
+  meta(name="viewport" content="width=device-width")
+  title User Login
+  link(href="/assets/stylesheets/main.css",rel="stylesheet")
+  script(src="/assets/javascripts/jquery-1.10.2.min.js")
+  script(src="/socket.io/socket.io.js")
+
+body
+  form(action='/signin' method='post')
+    input(name='username' type='text')
+    input(name='user_password' type='password')
+    input(type='submit' value='Login')
