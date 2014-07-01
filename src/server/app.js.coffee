@@ -18,7 +18,9 @@ app.use express.static(__dirname + "/public")
 
 room_manager = new RoomManager(5)
 room = new Room("TEST Room 1")
+room2 = new Room("TEST Room 2")
 room_manager.add_room(room)
+room_manager.add_room(room2)
 console.log("rooms:", room_manager.get_rooms_json_array())
 
 router.get "/", (req, res) ->

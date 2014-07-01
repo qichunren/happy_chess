@@ -1,5 +1,5 @@
 (function() {
-  var Player, Room, RoomManager, app, bodyParser, config, cookieParser, express, fs, io, port, room, room_manager, router, server, uuid, _,
+  var Player, Room, RoomManager, app, bodyParser, config, cookieParser, express, fs, io, port, room, room2, room_manager, router, server, uuid, _,
     __hasProp = {}.hasOwnProperty;
 
   _ = require("underscore");
@@ -123,7 +123,11 @@
 
   room = new Room("TEST Room 1");
 
+  room2 = new Room("TEST Room 2");
+
   room_manager.add_room(room);
+
+  room_manager.add_room(room2);
 
   console.log("rooms:", room_manager.get_rooms_json_array());
 

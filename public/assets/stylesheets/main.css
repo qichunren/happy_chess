@@ -1,5 +1,7 @@
 body {
     background: url('../images/bg.png') repeat;
+    padding-top: 70px;
+    padding-bottom: 30px;
 }
 
 #debug_panel {
@@ -25,20 +27,10 @@ body {
     color: #FFF;
 }
 
-#rooms_container {
-    float: left;
-}
-
-.room {
-    width: 200px;
-    height: 120px;
-    float: left;
-    margin-right: 10px;
-    margin-bottom: 10px;
+.room .panel {
     border: 2px solid #FFF;
     background-color: #FF9900;
     color: #FFF;
-    border-radius: 8px;
     box-shadow: rgba(255,90,20,0.9) 0 0 0.3125em;
 }
 
@@ -48,4 +40,8 @@ body {
     font-size: 18px;
     overflow: hidden;
     border-bottom: 1px solid #FFF;
+}
+
+.room .goto {
+
 }
