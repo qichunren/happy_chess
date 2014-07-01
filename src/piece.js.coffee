@@ -120,27 +120,36 @@ class Piece
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
   # Not include attackable enmy peices.
-  real_moveable_points: ->
+  moveable_points: ->
     target_points = []
     switch @name
       when 'carriage'
         if @point.x > 0
           for x in [(@point.x-1)..0]
             point = new Point(x, @point.y)
-            if @chess.is_blank_point(point)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            else if @chess.is_blank_point(point)
               target_points.push point
             else
               break
         if @point.x < 8
           for x in [(@point.x+1)..8]
             point = new Point(x, @point.y)
-            if @chess.is_blank_point(point)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
+            else if @chess.is_blank_point(point)
               target_points.push point
             else
               break
         if @point.y > 0
           for y in [(@point.y-1)..0]
             point = new Point(@point.x, y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
             if @chess.is_blank_point(point)
               target_points.push point
             else
@@ -149,6 +158,9 @@ class Piece
           for y in [(@point.y+1)..9]
             point = new Point(@point.x, y)
             console.log('point x,y', @point.x, y)
+            if @chess.is_enemy_point(point)
+              target_points.push point
+              break
             if @chess.is_blank_point(point)
               target_points.push point
             else
@@ -186,7 +198,7 @@ class Piece
     target_points
 
   # This method get a piece's all moveable points ignore pieces on chess panel.
-  moveable_points: ->
+  moveable_points_with_alone: ->
     target_points = []
     switch @name
       when 'carriage'

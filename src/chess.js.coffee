@@ -91,6 +91,15 @@ class Chess
         return blank
     blank
 
+  is_enemy_point: (point) ->
+    enemy = false
+    for piece in @enemy_pieces()
+      if piece.point.is_same(point)
+        enemy = true
+        return enemy
+    enemy
+
+
   point:(x, y) ->
     @points[x][y]
 
@@ -208,6 +217,7 @@ class Chess
     @player_red = new Player('red')
     @player_black = new Player('black')
     @current_player = @player_red
+    @enemy_player   = @player_black
     return
 
   setupPieces: ->
@@ -215,6 +225,9 @@ class Chess
     @pieces.push.apply(@pieces, @player_black.spawn_pieces())
     Game.log("Piece count: #{@pieces.length}")
     return
+
+  enemy_pieces: ->
+    @enemy_player.alive_pieces()
 
   setupEventListener: ->
     @canvas_element.addEventListener 'mousemove', (event) =>
@@ -244,7 +257,7 @@ class Chess
           else
             @try_attack_piece(piece)
           Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
-          Game.log("Moveable points #{piece.real_moveable_points().length}")
+          Game.log("Moveable points #{piece.moveable_points().length}")
           break
 
       for points_in_columns in @points
@@ -262,7 +275,7 @@ class Chess
 
   try_attack_piece: (piece) ->
     return if @selected_piece == null
-    moveable_points = @selected_piece.real_moveable_points()
+    moveable_points = @selected_piece.moveable_points()
     if piece.point.is_in(moveable_points)
       console.log('attack it!!!')
       piece.is_alive = false
@@ -272,7 +285,7 @@ class Chess
     @selected_point = null
     piece.is_selected = true
     @selected_piece = piece
-    moveable_points = piece.real_moveable_points()
+    moveable_points = piece.moveable_points()
     Game.log("moveable points:#{moveable_points.length}")
     for piece2 in @current_player.alive_pieces()
       if piece2 != piece
@@ -296,7 +309,7 @@ class Chess
   select_point: (point) ->
     if @is_blank_point(point)
       if @selected_piece
-        moveable_points = @selected_piece.real_moveable_points()
+        moveable_points = @selected_piece.moveable_points()
         @cancel_select_piece() if !point.is_in(moveable_points)
 
       point.is_selected = true
