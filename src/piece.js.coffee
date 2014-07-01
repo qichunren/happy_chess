@@ -32,31 +32,30 @@ class Piece
         @is_selected = false
     return
 
-  renderTo: (ctx) ->
+  renderTo: (chess) ->
+    @chess = chess
 #    if @attackable == true
 #      ctx.beginPath()
 #      ctx.arc(@point.x_in_world(), @point.y_in_world(), Game.radius+4, 0, 2 * Math.PI, false)
 #      ctx.fillStyle = 'red'
 #      ctx.fill()
 
-    ctx.beginPath()
-    ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
+    @chess.ctx.beginPath()
+    @chess.ctx.arc(@point.x_in_world(), @point.y_in_world(), @radius, 0, 2 * Math.PI, false)
     if @attackable == true
-      ctx.fillStyle = '#E9BEBE'
+      @chess.ctx.fillStyle = '#E9BEBE'
     else if @is_selected || @is_hover
-      ctx.fillStyle =  @selected_color
+      @chess.ctx.fillStyle =  @selected_color
     else
-      ctx.fillStyle = '#EEEDDD'
-    ctx.fill()
-    ctx.lineWidth = 5
-    ctx.strokeStyle = @color # border color
-    ctx.stroke()
-    ctx.font = '20pt Calibri'
-    ctx.fillStyle = @color
-    ctx.textAlign = 'center'
-    ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
-
-
+      @chess.ctx.fillStyle = '#EEEDDD'
+    @chess.ctx.fill()
+    @chess.ctx.lineWidth = 5
+    @chess.ctx.strokeStyle = @color # border color
+    @chess.ctx.stroke()
+    @chess.ctx.font = '20pt Calibri'
+    @chess.ctx.fillStyle = @color
+    @chess.ctx.textAlign = 'center'
+    @chess.ctx.fillText(@label(), @point.x_in_world(), @point.y_in_world() + 10)
     return
 
 #  animate_size: ->
@@ -120,14 +119,73 @@ class Piece
       when 'soldier_5'
         if @color == 'red' then {x: 8, y: 3} else Piece.reverse_point({x: 8, y: 3})
 
-  real_moveable_points: (current_pieces) ->
-#    target_points = []
-#    switch @name
-#      when 'carriage'
-#        for x in [0..@point.x]
+  # Not include attackable enmy peices.
+  real_moveable_points: ->
+    target_points = []
+    switch @name
+      when 'carriage'
+        if @point.x > 0
+          for x in [(@point.x-1)..0]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.x < 8
+          for x in [(@point.x+1)..8]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y > 0
+          for y in [(@point.y-1)..0]
+            point = new Point(@point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y < 9
+          for y in [(@point.y+1)..9]
+            point = new Point(@point.x, y)
+            console.log('point x,y', @point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+      when 'gun'
+        if @point.x > 0
+          for x in [(@point.x-1)..0]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.x < 8
+          for x in [(@point.x+1)..8]
+            point = new Point(x, @point.y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y > 0
+          for y in [(@point.y-1)..0]
+            point = new Point(@point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
+        if @point.y < 9
+          for y in [(@point.y+1)..9]
+            point = new Point(@point.x, y)
+            if @chess.is_blank_point(point)
+              target_points.push point
+            else
+              break
 
+    target_points
 
-
+  # This method get a piece's all moveable points ignore pieces on chess panel.
   moveable_points: ->
     target_points = []
     switch @name

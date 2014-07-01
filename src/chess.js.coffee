@@ -52,7 +52,7 @@ class Chess
         point.renderTo(@ctx)
 
     for piece in @pieces
-      piece.renderTo(@ctx) if piece.is_alive
+      piece.renderTo(this) if piece.is_alive
     return
 
   constructor: (canvas_id = 'chess_game') ->
@@ -237,13 +237,14 @@ class Chess
     @canvas_element.addEventListener 'click', (event) =>
       x = event.pageX - @canvasElemLeft
       y = event.pageY - @canvasElemTop
-      for piece in @pieces #@current_player.alive_pieces()
+      for piece in @pieces
         if x >= piece.point.x_in_world() - Game.radius && x <= piece.point.x_in_world() + Game.radius && y >= piece.point.y_in_world() - Game.radius && y <= piece.point.y_in_world() + Game.radius
           if piece.color == @current_player.color
             @select_piece(piece)
           else
             @try_attack_piece(piece)
           Game.log("selected piece:#{piece.name}, x,y:#{piece.point.x},#{piece.point.y}")
+          Game.log("Moveable points #{piece.real_moveable_points().length}")
           break
 
       for points_in_columns in @points
@@ -261,7 +262,7 @@ class Chess
 
   try_attack_piece: (piece) ->
     return if @selected_piece == null
-    moveable_points = @selected_piece.moveable_points()
+    moveable_points = @selected_piece.real_moveable_points()
     if piece.point.is_in(moveable_points)
       console.log('attack it!!!')
       piece.is_alive = false
@@ -271,7 +272,7 @@ class Chess
     @selected_point = null
     piece.is_selected = true
     @selected_piece = piece
-    moveable_points = piece.moveable_points()
+    moveable_points = piece.real_moveable_points()
     Game.log("moveable points:#{moveable_points.length}")
     for piece2 in @current_player.alive_pieces()
       if piece2 != piece
@@ -295,7 +296,7 @@ class Chess
   select_point: (point) ->
     if @is_blank_point(point)
       if @selected_piece
-        moveable_points = @selected_piece.moveable_points()
+        moveable_points = @selected_piece.real_moveable_points()
         @cancel_select_piece() if !point.is_in(moveable_points)
 
       point.is_selected = true
