@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                 separator: "\n\n#### Another file ####\n\n"
             },
             dist: {
-                src: ['src/game.js.coffee', 'src/piece.js.coffee', 'src/point.js.coffee', 'src/player.js.coffee', 'src/chess.js.coffee'],
+                src: ['src/game.js.coffee', 'src/piece.js.coffee', 'src/point.js.coffee', 'src/player.js.coffee', 'src/chess.js.coffee', 'src/happy_chess.js.coffee'],
                 dest: 'build/concat.<%= pkg.name %>.js.coffee'
             },
             server_dist: {

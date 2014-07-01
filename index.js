@@ -1,5 +1,5 @@
 (function() {
-  var Player, Room, RoomManager, app, bodyParser, config, cookieParser, express, fs, io, port, room, room2, room_manager, router, server, uuid, _,
+  var Player, Room, RoomManager, app, bodyParser, config, cookieParser, express, fs, io, port, room, room2, room_manager, router, server, socks, uuid, _,
     __hasProp = {}.hasOwnProperty;
 
   _ = require("underscore");
@@ -155,13 +155,22 @@
   });
 
   router.get("/api/rooms.json", function(req, res) {
-    return res.json(room_manager.get_rooms_json_array());
+    res.json(room_manager.get_rooms_json_array());
   });
 
   app.use('/', router);
 
   server.listen(port, function() {
     console.log("Server listening at port %d", port);
+  });
+
+  socks = [];
+
+  io.sockets.on('connection', function(socket) {
+    socks.push(socket);
+    return socket.emit('refresh', {
+      online_count: socks.length
+    });
   });
 
 }).call(this);

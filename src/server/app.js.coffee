@@ -48,10 +48,15 @@ router.post "/signin", (req, res) ->
 
 router.get "/api/rooms.json", (req, res) ->
   res.json(room_manager.get_rooms_json_array())
-
+  return
 
 app.use('/', router)
 
 server.listen port, ->
   console.log "Server listening at port %d", port
   return
+
+socks = []
+io.sockets.on 'connection', (socket) ->
+  socket.on 'player_login', (data) ->
+    socket.emit('refresh', {online_count: socks.length})

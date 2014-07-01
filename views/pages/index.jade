@@ -8,13 +8,14 @@ head
   script(src="/assets/javascripts/jquery-1.10.2.min.js")
   script(src="/assets/javascripts/underscore-min.js")
   script(src="/socket.io/socket.io.js")
-  script(src='/assets/javascripts/happy_chess.js')
+  script.
+    var socket = io("#{socketurl}");
+    var current_user = '#{username}';
 
 body
   div(class="navbar navbar-inverse navbar-fixed-top" role="navigation")
       div(class="container")
         div(class="navbar-header")
-
           a(class="navbar-brand" href="#") 欢乐象棋
 
         div(class="collapse navbar-collapse")
@@ -23,6 +24,9 @@ body
               a(href="#") 房间
             li
               a(href="#top100") 排行榜
+            li
+              a
+                span <strong id='online_count'>0</strong>人在线
 
   #rooms_container.container-fluid
     #rooms.row
@@ -41,10 +45,8 @@ body
     <button class='btn btn-warning goto' data-id='<%= room.id %>'>加入</button>
     </div></div></div>
     <% }); %>
-
+  script(src='/assets/javascripts/happy_chess.js')
   script.
-    var socket = io("#{socketurl}");
-    var current_user = '#{username}';
     $.getJSON( '/api/rooms.json', function( data ) {
         var list = $("#rooms_template").html();
         $("#rooms").html(_.template(list, {rooms:data}));

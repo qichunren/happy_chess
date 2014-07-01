@@ -4,6 +4,10 @@ body {
     padding-bottom: 30px;
 }
 
+#online_count {
+  font-weight: bold;
+}
+
 #debug_panel {
     float: right;
     margin-right: 10px;

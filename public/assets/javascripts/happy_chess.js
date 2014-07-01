@@ -1271,4 +1271,12 @@
     return chess_game.init();
   });
 
+  $(function() {
+    socket.emit('player_login', current_user);
+    return socket.on('refresh', function(data) {
+      console.log('receive refresh event: ', data);
+      return $("#online_count").text(data.online_count);
+    });
+  });
+
 }).call(this);

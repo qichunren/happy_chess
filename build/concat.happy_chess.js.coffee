@@ -788,3 +788,12 @@ $ ->
   window.game = chess_game # Use game.debug() to print debug info in browser console.
 
   chess_game.init()
+
+#### Another file ####
+
+$ ->
+  socket.emit('player_login', current_user)
+
+  socket.on 'refresh', (data) ->
+    console.log 'receive refresh event: ', data
+    $("#online_count").text(data.online_count)
