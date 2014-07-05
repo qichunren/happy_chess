@@ -28,17 +28,17 @@ body
               a
                 span <strong id='online_count'>0</strong>人在线
 
-  #rooms_container.container-fluid
-    #rooms.row
-
+  .container
     canvas#chess_game(width="600" height="650" style="border:1px solid #c3c3c3;background:#FFF;")
+
     div#debug_panel
       button#clear_log(onclick="$('#debug').val('').focus()") Clear
       textarea#debug
+  #rooms
 
   script(type="text/template" id="rooms_template")
     <% _.each(rooms, function(room) { %>
-    <div class='col-md-2 room'>
+    <div class='room'>
     <div class='panel panel-default'>
     <div class="panel-heading"><%= room.name %></div>
     <div class="panel-body">

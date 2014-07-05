@@ -4,6 +4,10 @@ body {
     padding-bottom: 30px;
 }
 
+.container {
+    width: 970px;
+}
+
 .form-signin {
     max-width: 330px;
     padding: 15px;
@@ -51,6 +55,13 @@ body {
     border:1px solid #BDBDBD;
     background-color: #000;
     color: #FFF;
+}
+
+#rooms {
+    width: 200px;
+    position: absolute;
+    top: 70px;
+    left: 10px;
 }
 
 .room .panel {
